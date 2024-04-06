@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/amahrouchi/serena/internal/utils/handlers"
+	"github.com/amahrouchi/serena/internal/core/handlers"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 )
 
 // TODO:
-//   - install Air
+//   - Use docker-compose and Air for the dev environment
 //   - install FX
 
 func main() {
