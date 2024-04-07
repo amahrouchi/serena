@@ -20,12 +20,17 @@ func NewHTTPServer(lc fx.Lifecycle) *echo.Echo {
 			e.GET("/healthz", healthHandler.Handle())
 
 			// Start the server
-			e.Logger.Fatal(e.Start(":8080"))
+			go func() {
+				err := e.Start(":8080")
+				if err != nil {
+					e.Logger.Errorf("Echo server failed to start. error=%v", err)
+				}
+			}()
 
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			return e.Close()
+			return e.Shutdown(ctx)
 		},
 	})
 
