@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/amahrouchi/serena/internal/utils/handlers"
+	"github.com/amahrouchi/serena/internal/utils/infrastructure/handlers"
 	"github.com/labstack/echo/v4"
 )
 
