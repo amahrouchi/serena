@@ -5,7 +5,7 @@ import (
 	"go.uber.org/fx"
 )
 
-// Modules is used to register the application dependencies.
+// Modules registers the application dependencies.
 var Modules = fx.Options(
 	// Declare the app modules here
 	utils.Modules,
