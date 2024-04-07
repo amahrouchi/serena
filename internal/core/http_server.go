@@ -7,18 +7,21 @@ import (
 	"go.uber.org/fx"
 )
 
-// NewHTTPServer creates a new HTTP server.
-func NewHTTPServer(lc fx.Lifecycle) *echo.Echo {
-	// Create the Echo server
-	e := echo.New()
+func NewEchoServer() *echo.Echo {
+	return echo.New()
+}
 
+func RegisterRoutes(e *echo.Echo) {
+	// Declare routes
+	healthHandler := handlers.NewHealthzHandler()
+	e.GET("/healthz", healthHandler.Handle())
+}
+
+// RegisterHooks creates a new HTTP server.
+func RegisterHooks(lc fx.Lifecycle, e *echo.Echo) {
 	// Register the server with the lifecycle
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			// Declare routes
-			healthHandler := handlers.NewHealthzHandler()
-			e.GET("/healthz", healthHandler.Handle())
-
 			// Start the server
 			go func() {
 				err := e.Start(":8080")
@@ -33,6 +36,4 @@ func NewHTTPServer(lc fx.Lifecycle) *echo.Echo {
 			return e.Shutdown(ctx)
 		},
 	})
-
-	return e
 }

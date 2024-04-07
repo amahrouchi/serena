@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/amahrouchi/serena/internal/core"
-	"github.com/labstack/echo/v4"
 	"go.uber.org/fx"
 )
 
@@ -14,7 +13,8 @@ import (
 
 func main() {
 	fx.New(
-		fx.Provide(core.NewHTTPServer),
-		fx.Invoke(func(e *echo.Echo) {}),
+		fx.Provide(core.NewEchoServer), // provide the echo server
+		fx.Invoke(core.RegisterRoutes), // register the routes
+		fx.Invoke(core.RegisterHooks),  // register the hooks starting/stopping the server
 	).Run()
 }
