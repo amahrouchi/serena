@@ -2,22 +2,16 @@ package core
 
 import (
 	"context"
-	"github.com/amahrouchi/serena/internal/core/handlers"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/fx"
 )
 
+// NewEchoServer creates a new Echo server.
 func NewEchoServer() *echo.Echo {
 	return echo.New()
 }
 
-func RegisterRoutes(e *echo.Echo) {
-	// Declare routes
-	healthHandler := handlers.NewHealthzHandler()
-	e.GET("/healthz", healthHandler.Handle())
-}
-
-// RegisterHooks creates a new HTTP server.
+// RegisterHooks registers the lifecycle hooks, starts/stops the Echo server.
 func RegisterHooks(lc fx.Lifecycle, e *echo.Echo) {
 	// Register the server with the lifecycle
 	lc.Append(fx.Hook{
