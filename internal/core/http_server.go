@@ -18,7 +18,7 @@ func RegisterHooks(lc fx.Lifecycle, e *echo.Echo) {
 		OnStart: func(ctx context.Context) error {
 			// Start the server
 			go func() {
-				err := e.Start(":8080")
+				err := e.Start(":8080") // TODO: make the port configurable
 				if err != nil {
 					e.Logger.Errorf("Echo server failed to start. error=%v", err)
 				}
