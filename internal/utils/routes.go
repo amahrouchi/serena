@@ -10,5 +10,5 @@ func RegisterRoutes(
 	e *echo.Echo,
 	health *handlers.HealthzHandler,
 ) {
-	e.GET("/healthz", health.Handle())
+	e.GET("/healthz", health.Handle)
 }

@@ -12,8 +12,6 @@ func NewHealthzHandler() *HealthzHandler {
 }
 
 // Handle handles the health check endpoint.
-func (h *HealthzHandler) Handle() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		return c.JSON(200, map[string]string{"status": "ok"})
-	}
+func (h *HealthzHandler) Handle(c echo.Context) error {
+	return c.JSON(200, map[string]string{"status": "ok 555"})
 }
