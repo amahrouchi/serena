@@ -8,9 +8,9 @@ services:
     networks:
       - serena-network
     ports:
-      - "8080:8080"
+      - "${SRN_PORT}:${SRN_PORT}"
     expose:
-      - "8080"
+      - "${SRN_PORT}"
     volumes:
       - .:/app
     env_file:

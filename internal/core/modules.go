@@ -11,6 +11,8 @@ var Modules = fx.Options(
 	utils.Modules,
 
 	// Declare core deps
+	fx.Provide(NewConfig),
+	fx.Invoke(func(config *Config) {}), // Loads the config
 	fx.Provide(NewLogger),
 
 	// Declare and start the HTTP server
