@@ -5,6 +5,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	envDev  = "dev"
+	envProd = "prod"
+)
+
 // Config represents the application configuration.
 type Config struct {
 	logger *zerolog.Logger

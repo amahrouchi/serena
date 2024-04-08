@@ -2,12 +2,12 @@ package core
 
 import (
 	"github.com/rs/zerolog"
+	"github.com/samber/lo"
 	"os"
 )
 
-func NewLogger() *zerolog.Logger {
-	// TODO: Make the level vary based on the environment.
-	level := zerolog.DebugLevel
+func NewLogger(config *Config) *zerolog.Logger {
+	level := lo.Ternary(config.Env == envDev, zerolog.DebugLevel, zerolog.InfoLevel)
 	logger := zerolog.New(os.Stdout).Level(level).With().Timestamp().Logger()
 
 	return &logger
