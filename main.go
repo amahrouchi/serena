@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/amahrouchi/serena/internal/core"
+	"github.com/amahrouchi/serena/internal/app"
 	"go.uber.org/fx"
 )
 
@@ -12,5 +12,5 @@ import (
 //   - tests
 
 func main() {
-	fx.New(core.Modules).Run()
+	fx.New(app.Modules).Run()
 }

@@ -12,28 +12,26 @@ const (
 
 // Config represents the application configuration.
 type Config struct {
-	logger *zerolog.Logger
-
 	Env  string
 	Port int
 }
 
 // NewConfig creates a new Config.
-func NewConfig(logger *zerolog.Logger) *Config {
-	config := Config{
-		logger: logger,
-	}
+func NewConfig() *Config {
+	config := &Config{}
 	config.init()
 
-	return &config
+	return config
 }
 
 // init initializes the configuration.
 func (c *Config) init() {
-	c.logger.Info().Msg("Initializing configuration from environment...")
-
 	// Load the configuration file
 	viper.AutomaticEnv()
+
+	// Set the default values
+	viper.SetDefault("env", envProd)
+	viper.SetDefault("port", 8080)
 
 	// Bind environment variables to Viper
 	_ = viper.BindEnv("env", "SRN_ENV")
@@ -41,11 +39,11 @@ func (c *Config) init() {
 
 	// Unmarshal the configuration
 	err := viper.Unmarshal(&c)
-	c.logger.Info().Msgf("Configuration: %+v", c)
 	if err != nil {
-		c.logger.Error().Err(err).Msg("Unable to load configuration from environment...")
 		panic(err)
 	}
+}
 
-	c.logger.Info().Msg("Configuration initialized")
+func LoadConfig(config *Config, logger *zerolog.Logger) {
+	logger.Info().Interface("config", config).Msgf("The config has been loaded")
 }
