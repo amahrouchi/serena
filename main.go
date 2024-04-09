@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	fx.New(app.Modules).Run()
+	fx.New(app.Options).Run()
 }

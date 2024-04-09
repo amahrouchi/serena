@@ -5,8 +5,8 @@ import (
 	"go.uber.org/fx"
 )
 
-// Modules registers the current module dependencies.
-var Modules = fx.Options(
+// Options registers the utils package FX options.
+var Options = fx.Options(
 	fx.Invoke(RegisterRoutes),
 	fx.Provide(handlers.NewHealthzHandler),
 )

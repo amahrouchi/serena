@@ -6,7 +6,8 @@ import (
 	"go.uber.org/fx"
 )
 
-var Modules = fx.Options(
-	core.Modules,
-	utils.Modules,
+// Options registers the app package FX options.
+var Options = fx.Options(
+	core.Options,
+	utils.Options,
 )

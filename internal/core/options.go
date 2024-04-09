@@ -4,8 +4,8 @@ import (
 	"go.uber.org/fx"
 )
 
-// Modules registers the application dependencies.
-var Modules = fx.Options(
+// Options registers the core package FX options.
+var Options = fx.Options(
 	// Declare core deps
 	fx.Provide(NewConfig),
 	fx.Invoke(LoadConfig), // Loads the config
