@@ -7,7 +7,7 @@ import (
 )
 
 func NewLogger(config *Config) *zerolog.Logger {
-	level := lo.Ternary(config.Env == envDev, zerolog.DebugLevel, zerolog.InfoLevel)
+	level := lo.Ternary(config.Env == EnvDev, zerolog.DebugLevel, zerolog.InfoLevel)
 	logger := zerolog.New(os.Stdout).Level(level).With().Timestamp().Logger()
 
 	return &logger

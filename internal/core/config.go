@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	envDev  = "dev"
-	envProd = "prod"
+	EnvDev  = "dev"
+	EnvProd = "prod"
 )
 
 // Config represents the application configuration.
@@ -30,7 +30,7 @@ func (c *Config) init() {
 	viper.AutomaticEnv()
 
 	// Set the default values
-	viper.SetDefault("env", envProd)
+	viper.SetDefault("env", EnvProd)
 	viper.SetDefault("port", 8080)
 
 	// Bind environment variables to Viper

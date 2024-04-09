@@ -9,3 +9,6 @@ restart:
 
 logs:
 	docker-compose logs -f
+
+test:
+	docker compose exec app go test -v -cover ./...
