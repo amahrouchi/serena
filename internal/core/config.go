@@ -44,6 +44,9 @@ func (c *Config) init() {
 	}
 }
 
-func LoadConfig(config *Config, logger *zerolog.Logger) {
+// LoadConfig loads the configuration.
+func LoadConfig(config *Config, logger *zerolog.Logger) error {
 	logger.Info().Interface("config", config).Msgf("The config has been loaded")
+
+	return nil
 }
