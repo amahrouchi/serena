@@ -5,9 +5,6 @@ import (
 	"go.uber.org/fx"
 )
 
-// TODO:
-//   - tests
-
 func main() {
 	fx.New(app.Modules).Run()
 }
