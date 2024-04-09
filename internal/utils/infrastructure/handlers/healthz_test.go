@@ -32,6 +32,18 @@ func (s *HealthzHandlerSuite) SetupTest() {
 	}
 }
 
+// TestNewHealthzHandler tests the NewHealthzHandler method.
+func (s *HealthzHandlerSuite) TestNewHealthzHandler() {
+	// Create the handler
+	handler := NewHealthzHandler(s.healthzHandler.logger, s.healthzHandler.config)
+
+	// Assert handler is created
+	s.NotNil(handler)
+	s.IsType(&HealthzHandler{}, handler)
+	s.Equal(s.healthzHandler.logger, handler.logger)
+	s.Equal(s.healthzHandler.config, handler.config)
+}
+
 // TestHandle tests the Handle method.
 func (s *HealthzHandlerSuite) TestHandle() {
 	s.Run("handle successfully", func() {
