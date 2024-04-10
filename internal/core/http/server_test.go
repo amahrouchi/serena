@@ -13,8 +13,15 @@ type HttpServerSuite struct {
 
 // TestNewEchoServer tests the NewEchoServer method.
 func (s *HttpServerSuite) TestNewEchoServer() {
-	server := NewEchoServer()
+	// Prepare the mocked handler
+	handler := new(mockHandler)
+	handler.On("Route").Return(Route{Method: echo.GET, Path: "/mock"})
+	handler.On("Handle").Return(nil)
 
+	// Create the server
+	server := NewEchoServer([]Handler{handler})
+
+	// Assert the server
 	s.NotNil(server)
 	s.IsType(&echo.Echo{}, server)
 }
