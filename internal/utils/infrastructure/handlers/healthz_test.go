@@ -63,6 +63,16 @@ func (s *HealthzHandlerSuite) TestHandle() {
 	})
 }
 
+// TestRoute tests the Route method.
+func (s *HealthzHandlerSuite) TestRoute() {
+	// Get the route
+	route := s.healthzHandler.Route()
+
+	// Assert the route
+	s.Equal(echo.GET, route.Method)
+	s.Equal("/healthz", route.Path)
+}
+
 // TestHealthzHandlerSuite runs the HealthzHandlerSuite.
 func TestHealthzHandlerSuite(t *testing.T) {
 	suite.Run(t, new(HealthzHandlerSuite))
