@@ -20,6 +20,16 @@ func NewHealthzHandler(logger *zerolog.Logger, config *core.Config) *HealthzHand
 	}
 }
 
+// Method provides the method of the handler endpoint
+func (h *HealthzHandler) Method() string {
+	return echo.GET
+}
+
+// Path provides the path of the handler endpoint
+func (h *HealthzHandler) Path() string {
+	return "/healthz"
+}
+
 // Handle handles the health check endpoint.
 func (h *HealthzHandler) Handle(c echo.Context) error {
 	h.logger.Info().Msg("Health check!")

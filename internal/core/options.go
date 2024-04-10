@@ -8,11 +8,16 @@ import (
 // Options registers the core package FX options.
 var Options = fx.Options(
 	// Declare core deps
-	fx.Provide(NewConfig),
-	fx.Invoke(LoadConfig), // Loads the config
-	fx.Provide(NewLogger),
-
-	// Declare and start the HTTP server
-	fx.Provide(http.NewEchoServer), // provide the echo server
-	fx.Invoke(RegisterHooks),       // register the hooks starting/stopping the server
+	fx.Provide(
+		NewConfig,
+		NewLogger,
+		fx.Annotate(
+			http.NewEchoServer,
+			fx.ParamTags(`group:"routes"`),
+		),
+	),
+	fx.Invoke(
+		LoadConfig,
+		RegisterHooks,
+	),
 )
