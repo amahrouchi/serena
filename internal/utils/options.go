@@ -11,8 +11,8 @@ var Options = fx.Options(
 	fx.Provide(
 		fx.Annotate(
 			handlers.NewHealthzHandler,
-			fx.As(new(http.Route)),
-			fx.ResultTags(`group:"routes"`),
+			fx.As(new(http.Handler)),
+			fx.ResultTags(`group:"handlers"`),
 		),
 	),
 )

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/amahrouchi/serena/internal/core"
+	"github.com/amahrouchi/serena/internal/core/http"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 )
@@ -20,14 +21,12 @@ func NewHealthzHandler(logger *zerolog.Logger, config *core.Config) *HealthzHand
 	}
 }
 
-// Method provides the method of the handler endpoint
-func (h *HealthzHandler) Method() string {
-	return echo.GET
-}
-
-// Path provides the path of the handler endpoint
-func (h *HealthzHandler) Path() string {
-	return "/healthz"
+// Route sets the http route configuration.
+func (h *HealthzHandler) Route() http.Route {
+	return http.Route{
+		Method: echo.GET,
+		Path:   "/healthz",
+	}
 }
 
 // Handle handles the health check endpoint.

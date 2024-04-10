@@ -5,11 +5,11 @@ import (
 )
 
 // NewEchoServer creates a new Echo server.
-func NewEchoServer(routes []Route) *echo.Echo {
-	// Create an Echo server and add the routes
+func NewEchoServer(handlers []Handler) *echo.Echo {
+	// Create an Echo server and add the handlers
 	e := echo.New()
-	for _, route := range routes {
-		e.Add(route.Method(), route.Path(), route.Handle)
+	for _, handler := range handlers {
+		e.Add(handler.Route().Method, handler.Route().Path, handler.Handle)
 	}
 
 	return e

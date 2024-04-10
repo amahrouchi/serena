@@ -13,7 +13,7 @@ var Options = fx.Options(
 		NewLogger,
 		fx.Annotate(
 			http.NewEchoServer,
-			fx.ParamTags(`group:"routes"`),
+			fx.ParamTags(`group:"handlers"`),
 		),
 	),
 	fx.Invoke(
