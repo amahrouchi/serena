@@ -12,8 +12,9 @@ const (
 
 // Config represents the application configuration.
 type Config struct {
-	Env  string
-	Port int
+	Env           string
+	Port          int
+	BlockDuration int
 }
 
 // NewConfig creates a new Config.
@@ -32,10 +33,12 @@ func (c *Config) init() {
 	// Set the default values
 	viper.SetDefault("env", EnvProd)
 	viper.SetDefault("port", 8080)
+	viper.SetDefault("port", 300)
 
 	// Bind environment variables to Viper
 	_ = viper.BindEnv("env", "SRN_ENV")
 	_ = viper.BindEnv("port", "SRN_PORT")
+	_ = viper.BindEnv("blockDuration", "SRN_BLOCK_DURATION")
 
 	// Unmarshal the configuration
 	err := viper.Unmarshal(&c)
