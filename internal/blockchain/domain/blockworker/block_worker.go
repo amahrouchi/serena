@@ -32,6 +32,7 @@ func (bw *BlockWorker) Start() {
 		//   - store the creation time inside the block
 		//   - use the creation time of prev block to calculate the wait time
 		//   - create blocks using a block producer service
+		//   - use a channel provided through FX to pass payload from API to block producer
 		time.Sleep(time.Duration(bw.config.BlockDuration) * time.Second)
 	}
 }

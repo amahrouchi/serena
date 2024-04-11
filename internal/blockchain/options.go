@@ -1,7 +1,7 @@
 package blockchain
 
 import (
-	"github.com/amahrouchi/serena/internal/blockchain/blockworker"
+	"github.com/amahrouchi/serena/internal/blockchain/domain/blockworker"
 	"go.uber.org/fx"
 )
 
