@@ -3,6 +3,7 @@ module github.com/amahrouchi/serena
 go 1.22.1
 
 require (
+	github.com/beevik/ntp v1.3.1
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/rs/zerolog v1.32.0
 	github.com/samber/lo v1.39.0

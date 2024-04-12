@@ -11,6 +11,7 @@ var Options = fx.Options(
 		fx.Annotate(services.NewBlockWorker, fx.As(new(services.BlockWorkerInterface))),
 		fx.Annotate(services.NewBlockProducer, fx.As(new(services.BlockProducerInterface))),
 		fx.Annotate(repositories.NewBlockRepository, fx.As(new(repositories.BlockRepositoryInterface))),
+		fx.Annotate(services.NewTimeSync, fx.As(new(services.TimeSyncInterface))),
 	),
 	fx.Invoke(func(worker services.BlockWorkerInterface) {
 		go worker.Start()
