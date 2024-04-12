@@ -3,7 +3,6 @@ package handlers
 import (
 	"github.com/amahrouchi/serena/internal/core"
 	"github.com/labstack/echo/v4"
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/suite"
 	"net/http/httptest"
 	"testing"
@@ -19,7 +18,7 @@ type HealthzHandlerSuite struct {
 // SetupTest sets up the test suite.
 func (s *HealthzHandlerSuite) SetupTest() {
 	// Create the logger & config
-	logger := zerolog.New(nil).Level(zerolog.Disabled)
+	logger := core.NewEmptyLogger()
 	config := core.Config{
 		Env:  core.EnvDev,
 		Port: 8080,
@@ -27,7 +26,7 @@ func (s *HealthzHandlerSuite) SetupTest() {
 
 	// Create the handler
 	s.healthzHandler = &HealthzHandler{
-		logger: &logger,
+		logger: logger,
 		config: &config,
 	}
 }

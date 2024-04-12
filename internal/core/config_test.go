@@ -1,7 +1,6 @@
 package core
 
 import (
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -13,8 +12,8 @@ type ConfigSuite struct {
 
 // TestLoadConfig tests the LoadConfig method.
 func (s *ConfigSuite) TestLoadConfig() {
-	logger := zerolog.New(nil).Level(zerolog.Disabled)
-	err := LoadConfig(&Config{}, &logger)
+	logger := NewEmptyLogger()
+	err := LoadConfig(&Config{}, logger)
 
 	s.NoError(err)
 }
