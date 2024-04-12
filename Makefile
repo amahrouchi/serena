@@ -13,6 +13,10 @@ restart: down up
 logs:
 	docker-compose logs -f
 
+.PHONY: db-cli
+db-cli:
+	docker-compose exec -it postgres psql "postgres://srn_user:testtest@localhost:5432/serena"
+
 .PHONY: test
 test:
 	docker compose exec app go test -v -cover ./... -coverprofile build/coverage.out
