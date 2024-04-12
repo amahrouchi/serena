@@ -1,21 +1,33 @@
-package domain
+package services
 
 import (
 	"crypto/sha256"
 	"encoding/json"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/models"
+	"github.com/amahrouchi/serena/internal/blockchain/domain/repositories"
 	"github.com/rs/zerolog"
 )
 
+// BlockProducerInterface is an interface for a block producer.
+type BlockProducerInterface interface {
+	CalculateHash(block *models.Block) string
+	ProduceBlock()
+}
+
 // BlockProducer is responsible for producing blocks.
 type BlockProducer struct {
-	logger zerolog.Logger
+	blockRepo repositories.BlockRepositoryInterface
+	logger    *zerolog.Logger
 }
 
 // NewBlockProducer creates a new BlockProducer.
-func NewBlockProducer(logger zerolog.Logger) *BlockProducer {
+func NewBlockProducer(
+	blockRepo repositories.BlockRepositoryInterface,
+	logger *zerolog.Logger,
+) *BlockProducer {
 	return &BlockProducer{
-		logger: logger,
+		blockRepo: blockRepo,
+		logger:    logger,
 	}
 }
 
@@ -29,7 +41,7 @@ func (bp *BlockProducer) CalculateHash(block *models.Block) string {
 			Interface("block", block).
 			Msg("Failed to marshal block header")
 
-		panic(err) // TODO: see how to recover from this
+		panic(err) // TODO: see how to recover/handle this
 	}
 
 	// Marshal payload
@@ -40,7 +52,7 @@ func (bp *BlockProducer) CalculateHash(block *models.Block) string {
 			Interface("block", block).
 			Msg("Failed to marshal block payload")
 
-		panic(err) // TODO: see how to recover from this
+		panic(err) // TODO: see how to recover/handle this
 	}
 
 	// Calculate hash
@@ -49,4 +61,10 @@ func (bp *BlockProducer) CalculateHash(block *models.Block) string {
 	hash.Write([]byte(preHash))
 
 	return string(hash.Sum(nil))
+}
+
+// ProduceBlock produces a block.
+func (bp *BlockProducer) ProduceBlock() {
+	bp.logger.Debug().Msg("Producing a block...")
+	bp.blockRepo.CreateEmptyBlock()
 }

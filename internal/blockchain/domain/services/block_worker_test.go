@@ -1,3 +1,3 @@
-package blockworker
+package services
 
 // TODO: Implement the tests.
