@@ -10,7 +10,7 @@ import (
 
 // BlockProducerInterface is an interface for a block producer.
 type BlockProducerInterface interface {
-	CalculateHash(block *models.Block) string
+	CalculateHash(block *models.BlockDTO) string
 	ProduceBlock()
 }
 
@@ -32,7 +32,7 @@ func NewBlockProducer(
 }
 
 // CalculateHash calculates the hash of the block.
-func (bp *BlockProducer) CalculateHash(block *models.Block) string {
+func (bp *BlockProducer) CalculateHash(block *models.BlockDTO) string {
 	// Marshal headers
 	jsonHeader, err := json.Marshal(block.Header)
 	if err != nil {

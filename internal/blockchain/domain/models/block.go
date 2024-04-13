@@ -1,7 +1,11 @@
 package models
 
-// Block represents a block in the blockchain.
-type Block struct {
+//type Block struct {
+//	gorm.Model
+//}
+
+// BlockDTO represents a block in the blockchain.
+type BlockDTO struct {
 	Header  *blockHeader   `json:"header"`
 	Payload map[string]any `json:"payload"`
 	Hash    string         `json:"hash"`
