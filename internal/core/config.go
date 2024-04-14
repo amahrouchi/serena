@@ -15,10 +15,11 @@ type Config struct {
 	Env           string
 	Port          int
 	BlockDuration int
+	DbDsn         string
 }
 
-// NewConfig creates a new Config.
-func NewConfig() *Config {
+// newConfig creates a new Config.
+func newConfig() *Config {
 	config := &Config{}
 	config.init()
 
@@ -34,11 +35,13 @@ func (c *Config) init() {
 	viper.SetDefault("env", EnvProd)
 	viper.SetDefault("port", 8080)
 	viper.SetDefault("port", 300)
+	viper.SetDefault("dbDsn", "app_user:user_password@localhost:5432/db_name")
 
 	// Bind environment variables to Viper
 	_ = viper.BindEnv("env", "SRN_ENV")
 	_ = viper.BindEnv("port", "SRN_PORT")
 	_ = viper.BindEnv("blockDuration", "SRN_BLOCK_DURATION")
+	_ = viper.BindEnv("dbDsn", "SRN_DB_DSN")
 
 	// Unmarshal the configuration
 	err := viper.Unmarshal(&c)
@@ -47,8 +50,8 @@ func (c *Config) init() {
 	}
 }
 
-// LoadConfig loads the configuration.
-func LoadConfig(config *Config, logger *zerolog.Logger) error {
+// loadConfig loads the configuration.
+func loadConfig(config *Config, logger *zerolog.Logger) error {
 	logger.Info().Interface("config", config).Msgf("The config has been loaded")
 
 	return nil

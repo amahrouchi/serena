@@ -10,15 +10,15 @@ type ConfigSuite struct {
 	suite.Suite
 }
 
-// TestLoadConfig tests the LoadConfig method.
+// TestLoadConfig tests the loadConfig method.
 func (s *ConfigSuite) TestLoadConfig() {
 	logger := NewEmptyLogger()
-	err := LoadConfig(&Config{}, logger)
+	err := loadConfig(&Config{}, logger)
 
 	s.NoError(err)
 }
 
-// TestNewConfig tests the NewConfig method.
+// TestNewConfig tests the newConfig method.
 func TestConfigSuite(t *testing.T) {
 	suite.Run(t, new(ConfigSuite))
 }

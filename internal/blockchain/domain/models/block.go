@@ -1,14 +1,12 @@
 package models
 
-//type Block struct {
-//	gorm.Model
-//}
+import "gorm.io/gorm"
 
-// BlockDTO represents a block in the blockchain.
-type BlockDTO struct {
-	Header  *blockHeader   `json:"header"`
-	Payload map[string]any `json:"payload"`
-	Hash    string         `json:"hash"`
+type Block struct {
+	gorm.Model
+	Header  *blockHeader   `gorm:"embedded"`
+	Payload map[string]any `gorm:"type:jsonb"`
+	Hash    string         `gorm:"unique;index"`
 }
 
 // blockHeader represents the header of a block.

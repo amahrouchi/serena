@@ -9,15 +9,16 @@ import (
 var Options = fx.Options(
 	// Declare core deps
 	fx.Provide(
-		NewConfig,
-		NewLogger,
+		newConfig,
+		newLogger,
 		fx.Annotate(
 			http.NewEchoServer,
 			fx.ParamTags(`group:"handlers"`),
 		),
 	),
 	fx.Invoke(
-		LoadConfig,
-		RegisterHooks,
+		loadConfig,
+		registerHooks,
+		dbConnection,
 	),
 )

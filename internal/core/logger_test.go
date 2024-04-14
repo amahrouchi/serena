@@ -11,12 +11,12 @@ type LoggerSuite struct {
 	suite.Suite
 }
 
-// TestNewLogger tests the NewLogger method.
+// TestNewLogger tests the newLogger method.
 func (s *LoggerSuite) TestNewLogger() {
 	// Test the logger creation for dev environment
 	s.Run("development", func() {
 		config := &Config{Env: EnvDev}
-		logger := NewLogger(config)
+		logger := newLogger(config)
 
 		s.NotNil(logger)
 		s.Equal(zerolog.DebugLevel, logger.GetLevel())
@@ -25,7 +25,7 @@ func (s *LoggerSuite) TestNewLogger() {
 	// Test the logger creation for prod environment
 	s.Run("production", func() {
 		config := &Config{Env: EnvProd}
-		logger := NewLogger(config)
+		logger := newLogger(config)
 
 		s.NotNil(logger)
 		s.Equal(zerolog.InfoLevel, logger.GetLevel())

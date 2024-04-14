@@ -8,8 +8,8 @@ import (
 	"strconv"
 )
 
-// RegisterHooks registers the lifecycle hooks, starts/stops the Echo server.
-func RegisterHooks(
+// registerHooks registers the lifecycle hooks, starts/stops the Echo server.
+func registerHooks(
 	lc fx.Lifecycle,
 	e *echo.Echo,
 	c *Config,
