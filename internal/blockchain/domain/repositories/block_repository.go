@@ -48,9 +48,23 @@ func (br *BlockRepository) CreateEmptyBlock() {
 // GetLastBlock gets the last block
 func (br *BlockRepository) GetLastBlock() *models.Block {
 	br.logger.Debug().Msg("Getting the last block with hash...")
-	// TODO: implement
 
-	return nil
+	// Loading last finalized block
+	block := models.Block{}
+	br.db.Not(&models.Block{Hash: nil}).
+		Order("creation_date").
+		Last(&block)
+
+	if block.ID == 0 {
+		return nil
+	}
+
+	br.logger.Info().
+		Uint("lastBlockId", block.ID).
+		Str("lastBlockHash", *block.Hash).
+		Msg("Last block loaded")
+
+	return &block
 }
 
 // CreateGenesisBlock creates the genesis block
@@ -80,7 +94,7 @@ func (br *BlockRepository) CreateGenesisBlock() *models.Block {
 			PreviousHash: "",
 			CreationDate: uint64(now.UnixMilli()),
 		},
-		Hash:    hex.EncodeToString(hash.Sum(nil)),
+		Hash:    lo.ToPtr(hex.EncodeToString(hash.Sum(nil))),
 		Payload: string(payload),
 	}
 
