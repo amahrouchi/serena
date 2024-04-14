@@ -11,7 +11,7 @@ restart: down up
 
 .PHONY: logs
 logs:
-	docker-compose logs -f
+	docker-compose logs -f app
 
 .PHONY: db-cli
 db-cli:
