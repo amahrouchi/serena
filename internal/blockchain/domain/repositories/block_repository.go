@@ -15,7 +15,7 @@ import (
 // BlockRepositoryInterface is an interface for a block repository
 type BlockRepositoryInterface interface {
 	CreateEmptyBlock()
-	GetLastBlock() *models.Block
+	GetLastBlock() (*models.Block, error)
 	CreateGenesisBlock() *models.Block
 }
 
@@ -46,17 +46,21 @@ func (br *BlockRepository) CreateEmptyBlock() {
 }
 
 // GetLastBlock gets the last block
-func (br *BlockRepository) GetLastBlock() *models.Block {
+func (br *BlockRepository) GetLastBlock() (*models.Block, error) {
 	br.logger.Debug().Msg("Getting the last block with hash...")
 
 	// Loading last finalized block
 	block := models.Block{}
-	br.db.Not(&models.Block{Hash: nil}).
+	result := br.db.Not(&models.Block{Hash: nil}).
 		Order("creation_date").
 		Last(&block)
 
-	if block.ID == 0 {
-		return nil
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	br.logger.Info().
@@ -64,7 +68,7 @@ func (br *BlockRepository) GetLastBlock() *models.Block {
 		Str("lastBlockHash", *block.Hash).
 		Msg("Last block loaded")
 
-	return &block
+	return &block, nil
 }
 
 // CreateGenesisBlock creates the genesis block

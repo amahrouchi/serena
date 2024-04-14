@@ -40,21 +40,17 @@ func (bw *BlockWorker) Start() {
 	// Try to get the reference time 5 times
 	refTime, err := bw.timeSync.Current()
 	if err != nil {
-		panic(err)
-	}
-
-	// If we failed to get the reference time, panic
-	if refTime == nil {
 		bw.logger.Error().Err(err).Msg("Failed to get reference time")
 		panic(err)
-
-		return
 	}
 
 	// Load the last block
-	lastBlock := bw.producer.GetLastBlock()
-	if lastBlock == nil {
+	lastBlock, err := bw.producer.GetLastBlock()
+	if lastBlock == nil && err == nil {
 		lastBlock = bw.producer.CreateGenesisBlock()
+	} else if err != nil {
+		bw.logger.Error().Err(err).Msgf("Cannot retrieve last block")
+		panic(err)
 	}
 
 	for {

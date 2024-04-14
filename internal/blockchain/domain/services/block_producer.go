@@ -11,7 +11,7 @@ import (
 // BlockProducerInterface is an interface for a block producer.
 type BlockProducerInterface interface {
 	CalculateHash(block *models.Block) string
-	GetLastBlock() *models.Block
+	GetLastBlock() (*models.Block, error)
 	ProduceBlock()
 	CreateGenesisBlock() *models.Block
 }
@@ -66,7 +66,7 @@ func (bp *BlockProducer) CalculateHash(block *models.Block) string {
 }
 
 // GetLastBlock Gets the last created block
-func (bp *BlockProducer) GetLastBlock() *models.Block {
+func (bp *BlockProducer) GetLastBlock() (*models.Block, error) {
 	return bp.blockRepo.GetLastBlock()
 }
 
