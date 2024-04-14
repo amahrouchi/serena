@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/models"
 	"github.com/amahrouchi/serena/internal/core"
 	"github.com/rs/zerolog"
@@ -82,7 +83,12 @@ func (br *BlockRepository) CreateGenesisBlock() *models.Block {
 		Hash:    hex.EncodeToString(hash.Sum(nil)),
 		Payload: string(payload),
 	}
-	br.db.Create(&block) // TODO: handle creation error here (how?)
+
+	// Save block to DB
+	br.db.Create(&block)
+	if block.ID == 0 {
+		panic(errors.New("cannot create genesis block"))
+	}
 
 	return &block
 }
