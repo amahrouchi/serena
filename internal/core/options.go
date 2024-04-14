@@ -3,6 +3,7 @@ package core
 import (
 	"github.com/amahrouchi/serena/internal/core/http"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 )
 
 // Options registers the core package FX options.
@@ -11,14 +12,13 @@ var Options = fx.Options(
 	fx.Provide(
 		newConfig,
 		newLogger,
-		fx.Annotate(
-			http.NewEchoServer,
-			fx.ParamTags(`group:"handlers"`),
-		),
+		newDbConnection,
+		fx.Annotate(http.NewEchoServer, fx.ParamTags(`group:"handlers"`)),
+		fx.Annotate(newTimeSync, fx.As(new(TimeSyncInterface))),
 	),
 	fx.Invoke(
 		loadConfig,
 		registerHooks,
-		dbConnection,
+		func(db *gorm.DB) {}, // force the DB connection creation
 	),
 )

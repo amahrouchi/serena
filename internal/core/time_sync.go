@@ -1,6 +1,7 @@
-package services
+package core
 
 import (
+	"errors"
 	"github.com/beevik/ntp"
 	"time"
 )
@@ -13,17 +14,19 @@ type TimeSyncInterface interface {
 // TimeSync is a service for syncing time.
 type TimeSync struct{}
 
-// NewTimeSync creates a new TimeSync service.
-func NewTimeSync() *TimeSync {
+// newTimeSync creates a new TimeSync service.
+func newTimeSync() *TimeSync {
 	return &TimeSync{}
 }
 
 // Current returns the current time.
 func (ts *TimeSync) Current() (*time.Time, error) {
-	currTime, err := ntp.Time("time.google.com")
-	if err != nil {
-		return nil, err
+	for i := 0; i < 5; i++ {
+		currTime, err := ntp.Time("time.google.com") // TODO: use several sources
+		if err == nil {
+			return &currTime, nil
+		}
 	}
 
-	return &currTime, nil
+	return nil, errors.New("unable to get date from NTP")
 }

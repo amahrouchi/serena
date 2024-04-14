@@ -3,7 +3,6 @@ package services
 import (
 	"github.com/amahrouchi/serena/internal/core"
 	"github.com/rs/zerolog"
-	"time"
 )
 
 // BlockWorkerInterface is an interface for a block worker.
@@ -14,7 +13,7 @@ type BlockWorkerInterface interface {
 // BlockWorker is a worker that processes blocks.
 type BlockWorker struct {
 	producer BlockProducerInterface
-	timeSync TimeSyncInterface
+	timeSync core.TimeSyncInterface
 	logger   *zerolog.Logger
 	config   *core.Config
 }
@@ -22,7 +21,7 @@ type BlockWorker struct {
 // NewBlockWorker creates a new BlockWorker.
 func NewBlockWorker(
 	producer BlockProducerInterface,
-	timeSync TimeSyncInterface,
+	timeSync core.TimeSyncInterface,
 	logger *zerolog.Logger,
 	config *core.Config,
 ) *BlockWorker {
@@ -39,13 +38,9 @@ func (bw *BlockWorker) Start() {
 	bw.logger.Info().Msg("Starting block worker...")
 
 	// Try to get the reference time 5 times
-	var refTime *time.Time
-	var err error
-	for i := 0; i < 5; i++ {
-		refTime, err = bw.timeSync.Current()
-		if err == nil {
-			break
-		}
+	refTime, err := bw.timeSync.Current()
+	if err != nil {
+		panic(err)
 	}
 
 	// If we failed to get the reference time, panic
@@ -54,6 +49,12 @@ func (bw *BlockWorker) Start() {
 		panic(err)
 
 		return
+	}
+
+	// Load the last block
+	lastBlock := bw.producer.GetLastBlock()
+	if lastBlock == nil {
+		lastBlock = bw.producer.CreateGenesisBlock()
 	}
 
 	for {

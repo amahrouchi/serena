@@ -2,15 +2,17 @@ package models
 
 import "gorm.io/gorm"
 
+// Block is the block DB model
 type Block struct {
 	gorm.Model
-	Header  *blockHeader   `gorm:"embedded"`
-	Payload map[string]any `gorm:"type:jsonb"`
-	Hash    string         `gorm:"unique;index"`
+	Header  *BlockHeader `gorm:"embedded"`
+	Payload string       `gorm:"type:json"`
+	Hash    string       `gorm:"unique;index"`
+	// TODO: remove created_at, updated_at
 }
 
-// blockHeader represents the header of a block.
-type blockHeader struct {
-	PreviousHash string `json:"previousHash"`
-	CreationDate uint64 `json:"creationDate"`
+// BlockHeader represents the header of a block.
+type BlockHeader struct {
+	PreviousHash string `gorm:"unique" json:"previousHash"`
+	CreationDate uint64 `json:"creationDate"` // TODO: use a date sql type here
 }

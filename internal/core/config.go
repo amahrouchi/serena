@@ -35,7 +35,6 @@ func (c *Config) init() {
 	viper.SetDefault("env", EnvProd)
 	viper.SetDefault("port", 8080)
 	viper.SetDefault("port", 300)
-	viper.SetDefault("dbDsn", "app_user:user_password@localhost:5432/db_name")
 
 	// Bind environment variables to Viper
 	_ = viper.BindEnv("env", "SRN_ENV")

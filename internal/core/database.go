@@ -7,8 +7,9 @@ import (
 	"gorm.io/gorm"
 )
 
-// dbConnection established the DB connection
-func dbConnection(config *Config, logger *zerolog.Logger) {
+// newDbConnection established the DB connection
+func newDbConnection(config *Config, logger *zerolog.Logger) *gorm.DB {
+	logger.Info().Msg("Connecting to the database...")
 	db, err := gorm.Open(postgres.Open(config.DbDsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
@@ -16,5 +17,10 @@ func dbConnection(config *Config, logger *zerolog.Logger) {
 	logger.Info().Msg("Connection to the database established")
 
 	// Migrate the schema
+	// TODO: handle migrations properly
+	logger.Info().Msg("Automigration of schema: in progress...")
 	db.AutoMigrate(models.Block{})
+	logger.Info().Msg("Automigration of schema: done!")
+
+	return db
 }
