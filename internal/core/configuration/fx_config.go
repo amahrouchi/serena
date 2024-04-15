@@ -1,19 +1,18 @@
-package core
+package configuration
 
 import (
 	"context"
-	"github.com/amahrouchi/serena/internal/core/configuration"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 	"go.uber.org/fx"
 	"strconv"
 )
 
-// registerHooks registers the lifecycle hooks, starts/stops the Echo server.
-func registerHooks(
+// RegisterHooks registers the lifecycle hooks, starts/stops the Echo server.
+func RegisterHooks(
 	lc fx.Lifecycle,
 	e *echo.Echo,
-	c *configuration.Config,
+	c *Config,
 	logger *zerolog.Logger,
 ) {
 	// Register the server with the lifecycle

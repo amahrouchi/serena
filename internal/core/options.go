@@ -20,7 +20,7 @@ var Options = fx.Options(
 	),
 	fx.Invoke(
 		configuration.LoadConfig,
-		registerHooks,
+		configuration.RegisterHooks,
 		func(db *gorm.DB) {}, // force the DB connection creation
 	),
 )
