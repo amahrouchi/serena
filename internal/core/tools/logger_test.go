@@ -1,4 +1,4 @@
-package core
+package tools
 
 import (
 	"github.com/amahrouchi/serena/internal/core/configuration"
@@ -12,12 +12,12 @@ type LoggerSuite struct {
 	suite.Suite
 }
 
-// TestNewLogger tests the newLogger method.
+// TestNewLogger tests the NewLogger method.
 func (s *LoggerSuite) TestNewLogger() {
 	// Test the logger creation for dev environment
 	s.Run("development", func() {
 		config := &configuration.Config{Env: configuration.EnvDev}
-		logger := newLogger(config)
+		logger := NewLogger(config)
 
 		s.NotNil(logger)
 		s.Equal(zerolog.DebugLevel, logger.GetLevel())
@@ -26,7 +26,7 @@ func (s *LoggerSuite) TestNewLogger() {
 	// Test the logger creation for prod environment
 	s.Run("production", func() {
 		config := &configuration.Config{Env: configuration.EnvProd}
-		logger := newLogger(config)
+		logger := NewLogger(config)
 
 		s.NotNil(logger)
 		s.Equal(zerolog.InfoLevel, logger.GetLevel())

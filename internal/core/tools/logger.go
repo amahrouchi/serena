@@ -1,4 +1,4 @@
-package core
+package tools
 
 import (
 	"github.com/amahrouchi/serena/internal/core/configuration"
@@ -7,8 +7,8 @@ import (
 	"os"
 )
 
-// newLogger creates a new logger.
-func newLogger(config *configuration.Config) *zerolog.Logger {
+// NewLogger creates a new logger.
+func NewLogger(config *configuration.Config) *zerolog.Logger {
 	level := lo.Ternary(config.Env == configuration.EnvDev, zerolog.DebugLevel, zerolog.InfoLevel)
 	logger := zerolog.New(os.Stdout).Level(level).With().Timestamp().Logger()
 

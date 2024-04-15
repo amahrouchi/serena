@@ -13,7 +13,7 @@ var Options = fx.Options(
 	// Declare core deps
 	fx.Provide(
 		configuration.NewConfig,
-		newLogger,
+		tools.NewLogger,
 		newDbConnection,
 		fx.Annotate(http.NewEchoServer, fx.ParamTags(`group:"handlers"`)),
 		fx.Annotate(tools.NewTimeSync, fx.As(new(tools.TimeSyncInterface))),
