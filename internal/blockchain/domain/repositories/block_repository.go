@@ -52,7 +52,7 @@ func (br *BlockRepository) GetLastBlock() (*models.Block, error) {
 	// Loading last finalized block
 	block := models.Block{}
 	result := br.db.Not(&models.Block{Hash: nil}).
-		Order("creation_date").
+		Order("created_at").
 		Last(&block)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -94,12 +94,10 @@ func (br *BlockRepository) CreateGenesisBlock() *models.Block {
 
 	// Block construction
 	block := models.Block{
-		Header: &models.BlockHeader{
-			PreviousHash: "",
-			CreationDate: uint64(now.UnixMilli()),
-		},
-		Hash:    lo.ToPtr(hex.EncodeToString(hash.Sum(nil))),
-		Payload: string(payload),
+		PreviousHash: "",
+		CreatedAt:    *now,
+		Hash:         lo.ToPtr(hex.EncodeToString(hash.Sum(nil))),
+		Payload:      string(payload),
 	}
 
 	// Save block to DB

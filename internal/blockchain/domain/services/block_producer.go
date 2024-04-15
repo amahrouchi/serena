@@ -1,8 +1,6 @@
 package services
 
 import (
-	"crypto/sha256"
-	"encoding/json"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/models"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/repositories"
 	"github.com/rs/zerolog"
@@ -35,34 +33,37 @@ func NewBlockProducer(
 
 // CalculateHash calculates the hash of the block.
 func (bp *BlockProducer) CalculateHash(block *models.Block) string {
-	// Marshal headers
-	jsonHeader, err := json.Marshal(block.Header)
-	if err != nil {
-		bp.logger.Error().
-			Err(err).
-			Interface("block", block).
-			Msg("Failed to marshal block header")
+	// TODO: implement
+	return ""
 
-		panic(err) // TODO: see how to recover/handle this
-	}
-
-	// Marshal payload
-	jsonPayload, err := json.Marshal(block.Payload)
-	if err != nil {
-		bp.logger.Error().
-			Err(err).
-			Interface("block", block).
-			Msg("Failed to marshal block payload")
-
-		panic(err) // TODO: see how to recover/handle this
-	}
-
-	// Calculate hash
-	preHash := string(jsonHeader) + string(jsonPayload)
-	hash := sha256.New()
-	hash.Write([]byte(preHash))
-
-	return string(hash.Sum(nil))
+	//// Marshal headers
+	//jsonHeader, err := json.Marshal(block.Header)
+	//if err != nil {
+	//	bp.logger.Error().
+	//		Err(err).
+	//		Interface("block", block).
+	//		Msg("Failed to marshal block header")
+	//
+	//	panic(err) // TODO: see how to recover/handle this
+	//}
+	//
+	//// Marshal payload
+	//jsonPayload, err := json.Marshal(block.Payload)
+	//if err != nil {
+	//	bp.logger.Error().
+	//		Err(err).
+	//		Interface("block", block).
+	//		Msg("Failed to marshal block payload")
+	//
+	//	panic(err) // TODO: see how to recover/handle this
+	//}
+	//
+	//// Calculate hash
+	//preHash := string(jsonHeader) + string(jsonPayload)
+	//hash := sha256.New()
+	//hash.Write([]byte(preHash))
+	//
+	//return string(hash.Sum(nil))
 }
 
 // GetLastBlock Gets the last created block
