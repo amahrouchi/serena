@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/amahrouchi/serena/internal/core/configuration"
-	"github.com/amahrouchi/serena/internal/core/tools"
+	"github.com/amahrouchi/serena/internal/core/tests"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
 	"net/http/httptest"
@@ -16,10 +16,10 @@ type HealthzHandlerSuite struct {
 	healthzHandler *HealthzHandler
 }
 
-// SetupTest sets up the test suite.
+// SetupTest sets up the test suite...
 func (s *HealthzHandlerSuite) SetupTest() {
 	// Create the logger & config
-	logger := tools.NewEmptyLogger()
+	logger := tests.NewEmptyLogger()
 	config := configuration.Config{
 		Env:  configuration.EnvDev,
 		Port: 8080,

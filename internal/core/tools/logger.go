@@ -14,10 +14,3 @@ func NewLogger(config *configuration.Config) *zerolog.Logger {
 
 	return &logger
 }
-
-// NewEmptyLogger creates a new empty logger.
-func NewEmptyLogger() *zerolog.Logger {
-	logger := zerolog.New(nil).Level(zerolog.Disabled)
-
-	return &logger
-}

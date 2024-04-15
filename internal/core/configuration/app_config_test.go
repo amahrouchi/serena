@@ -1,7 +1,7 @@
 package configuration
 
 import (
-	"github.com/rs/zerolog"
+	"github.com/amahrouchi/serena/internal/core/tests"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -13,8 +13,8 @@ type ConfigSuite struct {
 
 // TestLoadConfig tests the LoadConfig method.
 func (s *ConfigSuite) TestLoadConfig() {
-	logger := zerolog.New(nil).Level(zerolog.Disabled) // TODO: should use the NewEmptyConfig func but it creates a circular dep
-	err := LoadConfig(&Config{}, &logger)
+	logger := tests.NewEmptyLogger()
+	err := LoadConfig(&Config{}, logger)
 
 	s.NoError(err)
 }
