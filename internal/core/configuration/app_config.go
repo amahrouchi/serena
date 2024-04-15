@@ -34,7 +34,7 @@ func (c *Config) init() {
 	// Set the default values
 	viper.SetDefault("env", EnvProd)
 	viper.SetDefault("port", 8080)
-	viper.SetDefault("port", 300)
+	viper.SetDefault("blockDuration", 300)
 
 	// Bind environment variables to Viper
 	_ = viper.BindEnv("env", "SRN_ENV")
