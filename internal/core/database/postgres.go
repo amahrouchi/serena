@@ -1,4 +1,4 @@
-package core
+package database
 
 import (
 	"github.com/amahrouchi/serena/internal/blockchain/domain/models"
@@ -8,8 +8,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// newDbConnection established the DB connection
-func newDbConnection(config *configuration.Config, logger *zerolog.Logger) *gorm.DB {
+// NewPostgresDbConnection established the DB connection
+func NewPostgresDbConnection(config *configuration.Config, logger *zerolog.Logger) *gorm.DB {
 	logger.Info().Msg("Connecting to the database...")
 	db, err := gorm.Open(postgres.Open(config.DbDsn), &gorm.Config{})
 	if err != nil {

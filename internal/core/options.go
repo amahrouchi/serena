@@ -2,6 +2,7 @@ package core
 
 import (
 	"github.com/amahrouchi/serena/internal/core/configuration"
+	"github.com/amahrouchi/serena/internal/core/database"
 	"github.com/amahrouchi/serena/internal/core/http"
 	"github.com/amahrouchi/serena/internal/core/tools"
 	"go.uber.org/fx"
@@ -14,7 +15,7 @@ var Options = fx.Options(
 	fx.Provide(
 		configuration.NewConfig,
 		tools.NewLogger,
-		newDbConnection,
+		database.NewPostgresDbConnection,
 		fx.Annotate(http.NewEchoServer, fx.ParamTags(`group:"handlers"`)),
 		fx.Annotate(tools.NewTimeSync, fx.As(new(tools.TimeSyncInterface))),
 	),
