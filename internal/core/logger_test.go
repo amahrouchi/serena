@@ -1,6 +1,7 @@
 package core
 
 import (
+	"github.com/amahrouchi/serena/internal/core/configuration"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -15,7 +16,7 @@ type LoggerSuite struct {
 func (s *LoggerSuite) TestNewLogger() {
 	// Test the logger creation for dev environment
 	s.Run("development", func() {
-		config := &Config{Env: EnvDev}
+		config := &configuration.Config{Env: configuration.EnvDev}
 		logger := newLogger(config)
 
 		s.NotNil(logger)
@@ -24,7 +25,7 @@ func (s *LoggerSuite) TestNewLogger() {
 
 	// Test the logger creation for prod environment
 	s.Run("production", func() {
-		config := &Config{Env: EnvProd}
+		config := &configuration.Config{Env: configuration.EnvProd}
 		logger := newLogger(config)
 
 		s.NotNil(logger)

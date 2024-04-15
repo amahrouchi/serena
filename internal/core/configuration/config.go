@@ -1,4 +1,4 @@
-package core
+package configuration
 
 import (
 	"github.com/rs/zerolog"
@@ -18,8 +18,8 @@ type Config struct {
 	DbDsn         string
 }
 
-// newConfig creates a new Config.
-func newConfig() *Config {
+// NewConfig creates a new Config.
+func NewConfig() *Config {
 	config := &Config{}
 	config.init()
 
@@ -49,8 +49,8 @@ func (c *Config) init() {
 	}
 }
 
-// loadConfig loads the configuration.
-func loadConfig(config *Config, logger *zerolog.Logger) error {
+// LoadConfig loads the configuration.
+func LoadConfig(config *Config, logger *zerolog.Logger) error {
 	logger.Info().Interface("config", config).Msgf("The config has been loaded")
 
 	return nil

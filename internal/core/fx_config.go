@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"github.com/amahrouchi/serena/internal/core/configuration"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 	"go.uber.org/fx"
@@ -12,7 +13,7 @@ import (
 func registerHooks(
 	lc fx.Lifecycle,
 	e *echo.Echo,
-	c *Config,
+	c *configuration.Config,
 	logger *zerolog.Logger,
 ) {
 	// Register the server with the lifecycle

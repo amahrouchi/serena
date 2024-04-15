@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/amahrouchi/serena/internal/core"
+	"github.com/amahrouchi/serena/internal/core/configuration"
 	"github.com/amahrouchi/serena/internal/core/http"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
@@ -10,11 +10,11 @@ import (
 // HealthzHandler provides a health check endpoint.
 type HealthzHandler struct {
 	logger *zerolog.Logger
-	config *core.Config
+	config *configuration.Config
 }
 
 // NewHealthzHandler creates a new instance of HealthzHandler.
-func NewHealthzHandler(logger *zerolog.Logger, config *core.Config) *HealthzHandler {
+func NewHealthzHandler(logger *zerolog.Logger, config *configuration.Config) *HealthzHandler {
 	return &HealthzHandler{
 		logger: logger,
 		config: config,
