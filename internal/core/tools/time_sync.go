@@ -1,4 +1,4 @@
-package core
+package tools
 
 import (
 	"errors"
@@ -14,8 +14,8 @@ type TimeSyncInterface interface {
 // TimeSync is a service for syncing time.
 type TimeSync struct{}
 
-// newTimeSync creates a new TimeSync service.
-func newTimeSync() *TimeSync {
+// NewTimeSync creates a new TimeSync service.
+func NewTimeSync() *TimeSync {
 	return &TimeSync{}
 }
 

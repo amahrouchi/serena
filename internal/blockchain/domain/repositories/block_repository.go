@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/models"
-	"github.com/amahrouchi/serena/internal/core"
+	"github.com/amahrouchi/serena/internal/core/tools"
 	"github.com/rs/zerolog"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
@@ -21,14 +21,14 @@ type BlockRepositoryInterface interface {
 
 // BlockRepository is a repository for blocks
 type BlockRepository struct {
-	timeSync core.TimeSyncInterface
+	timeSync tools.TimeSyncInterface
 	db       *gorm.DB
 	logger   *zerolog.Logger
 }
 
 // NewBlockRepository creates a new BlockRepository
 func NewBlockRepository(
-	timeSync core.TimeSyncInterface,
+	timeSync tools.TimeSyncInterface,
 	db *gorm.DB,
 	logger *zerolog.Logger,
 ) *BlockRepository {

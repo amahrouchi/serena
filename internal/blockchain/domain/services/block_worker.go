@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/amahrouchi/serena/internal/core"
+	"github.com/amahrouchi/serena/internal/core/tools"
 	"github.com/rs/zerolog"
 )
 
@@ -13,7 +14,7 @@ type BlockWorkerInterface interface {
 // BlockWorker is a worker that processes blocks.
 type BlockWorker struct {
 	producer BlockProducerInterface
-	timeSync core.TimeSyncInterface
+	timeSync tools.TimeSyncInterface
 	logger   *zerolog.Logger
 	config   *core.Config
 }
@@ -21,7 +22,7 @@ type BlockWorker struct {
 // NewBlockWorker creates a new BlockWorker.
 func NewBlockWorker(
 	producer BlockProducerInterface,
-	timeSync core.TimeSyncInterface,
+	timeSync tools.TimeSyncInterface,
 	logger *zerolog.Logger,
 	config *core.Config,
 ) *BlockWorker {

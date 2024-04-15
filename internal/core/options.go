@@ -2,6 +2,7 @@ package core
 
 import (
 	"github.com/amahrouchi/serena/internal/core/http"
+	"github.com/amahrouchi/serena/internal/core/tools"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
 )
@@ -14,7 +15,7 @@ var Options = fx.Options(
 		newLogger,
 		newDbConnection,
 		fx.Annotate(http.NewEchoServer, fx.ParamTags(`group:"handlers"`)),
-		fx.Annotate(newTimeSync, fx.As(new(TimeSyncInterface))),
+		fx.Annotate(tools.NewTimeSync, fx.As(new(tools.TimeSyncInterface))),
 	),
 	fx.Invoke(
 		loadConfig,
