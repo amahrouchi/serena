@@ -9,7 +9,7 @@ import (
 
 // NewLogger creates a new logger.
 func NewLogger(config *configuration.Config) *zerolog.Logger {
-	level := lo.Ternary(config.Env == configuration.EnvDev, zerolog.DebugLevel, zerolog.InfoLevel)
+	level := lo.Ternary(config.Env == configuration.EnvProd, zerolog.InfoLevel, zerolog.DebugLevel)
 	logger := zerolog.New(os.Stdout).Level(level).With().Timestamp().Logger()
 
 	return &logger

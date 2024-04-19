@@ -9,13 +9,11 @@ services:
     networks:
       - serena-network
     ports:
-      - "${SRN_PORT}:${SRN_PORT}"
+      - "8080:8080" # TODO: make dynamic
     expose:
-      - "${SRN_PORT}"
+      - "8080" # TODO: make dynamic
     volumes:
       - .:/app
-    env_file:
-      - .env
 
   # The database service
   postgres:

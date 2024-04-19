@@ -11,17 +11,26 @@ import (
 // NewPostgresDbConnection established the DB connection
 func NewPostgresDbConnection(config *configuration.Config, logger *zerolog.Logger) *gorm.DB {
 	logger.Info().Msg("Connecting to the database...")
-	db, err := gorm.Open(postgres.Open(config.DbDsn), &gorm.Config{})
+	dsn := "host=" + config.DbHost + " user=" + config.DbUser + " password=" + config.DbPassword + " dbname=" + config.DbName + " port=" + config.DbPort + " sslmode=disable TimeZone=UTC"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
-	logger.Info().Msg("Connection to the database established")
 
 	// Migrate the schema
-	// TODO: handle migrations properly
-	logger.Info().Msg("Automigration of schema: in progress...")
-	db.AutoMigrate(models.Block{})
-	logger.Info().Msg("Automigration of schema: done!")
+	if config.Env != configuration.EnvTest {
+		// TODO: handle migrations properly (test env can keep this behaviour, see RunTestApp func)
+		logger.Info().Msg("Auto-migration of the schema...")
+		AutoMigrate(db)
+	}
 
 	return db
+}
+
+// AutoMigrate migrates the schema
+func AutoMigrate(db *gorm.DB) {
+	err := db.AutoMigrate(models.Block{})
+	if err != nil {
+		panic(err)
+	}
 }
