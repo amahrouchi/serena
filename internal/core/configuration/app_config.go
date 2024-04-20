@@ -35,8 +35,6 @@ func NewConfig() *Config {
 
 // init initializes the configuration.
 func (c *Config) init() {
-	// TODO: load config from yaml files with env overrides
-
 	// Load test environment variables
 	configFile := ".env." + os.Getenv("SRN_ENV")
 	viper.AddConfigPath("/app")
