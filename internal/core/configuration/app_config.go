@@ -47,12 +47,6 @@ func (c *Config) init() {
 		panic(err)
 	}
 
-	// Set the default values
-	viper.SetDefault("env", EnvProd)
-	viper.SetDefault("port", 8080)
-	viper.SetDefault("blockWorkerEnabled", true)
-	viper.SetDefault("blockDuration", 300)
-
 	// Unmarshal the configuration
 	err := viper.Unmarshal(&c)
 	if err != nil {
