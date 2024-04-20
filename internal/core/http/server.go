@@ -8,6 +8,7 @@ import (
 func NewEchoServer(handlers []Handler) *echo.Echo {
 	// Create an Echo server and add the handlers
 	e := echo.New()
+	e.HideBanner = true
 	for _, handler := range handlers {
 		e.Add(handler.Route().Method, handler.Route().Path, handler.Handle)
 	}
