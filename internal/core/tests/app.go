@@ -35,7 +35,7 @@ func (ta *TestApp) Run(t *testing.T, opts ...fx.Option) {
 		fx.Invoke(func(config *configuration.Config, db *gorm.DB, logger *zerolog.Logger) {
 			// Reset the test database
 			logger.Info().Msg("Resetting test database")
-			db.Exec("DROP SCHEMA public CASCADE")
+			db.Exec("DROP SCHEMA IF EXISTS public CASCADE")
 			db.Exec("CREATE SCHEMA public")
 			database.AutoMigrate(db)
 		}),
