@@ -16,7 +16,7 @@ type BlockRepositorySuite struct {
 
 func (brs *BlockRepositorySuite) TestGetLastBlock() {
 	var config *configuration.Config
-	tests.RunTestApp(brs.T(), fx.Populate(&config))
+	tests.NewTestApp(false).Run(brs.T(), fx.Populate(&config))
 	fmt.Printf("config: %+v\n", config)
 }
 

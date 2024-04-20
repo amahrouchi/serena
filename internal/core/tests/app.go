@@ -11,8 +11,24 @@ import (
 	"testing"
 )
 
-// RunTestApp runs the test app
-func RunTestApp(t *testing.T, opts ...fx.Option) {
+// TestApp is a test application.
+type TestApp struct {
+	EnableFxLogs bool
+}
+
+// NewTestApp creates a new test application.
+func NewTestApp(enableFxLogs bool) *TestApp {
+	return &TestApp{
+		EnableFxLogs: enableFxLogs,
+	}
+}
+
+// Run runs the test application.
+func (ta *TestApp) Run(t *testing.T, opts ...fx.Option) {
+	if !ta.EnableFxLogs {
+		opts = append(opts, fx.NopLogger)
+	}
+
 	fxtest.New(
 		t,
 		app.Options,
