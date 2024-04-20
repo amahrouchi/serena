@@ -9,15 +9,15 @@ import (
 
 // HealthzHandler provides a health check endpoint.
 type HealthzHandler struct {
-	logger *zerolog.Logger
-	config *configuration.Config
+	Logger *zerolog.Logger
+	Config *configuration.Config
 }
 
 // NewHealthzHandler creates a new instance of HealthzHandler.
 func NewHealthzHandler(logger *zerolog.Logger, config *configuration.Config) *HealthzHandler {
 	return &HealthzHandler{
-		logger: logger,
-		config: config,
+		Logger: logger,
+		Config: config,
 	}
 }
 
@@ -31,8 +31,8 @@ func (h *HealthzHandler) Route() http.Route {
 
 // Handle handles the health check endpoint.
 func (h *HealthzHandler) Handle(c echo.Context) error {
-	h.logger.Info().Msg("Health check!")
-	h.logger.Info().Msgf("Config from handler: %+v", h.config)
+	h.Logger.Info().Msg("Health check!")
+	h.Logger.Debug().Msgf("Config env from handler: %+v", h.Config.Env)
 
 	return c.JSON(200, map[string]string{"status": "ok"})
 }

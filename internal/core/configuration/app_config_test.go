@@ -1,6 +1,7 @@
-package configuration
+package configuration_test
 
 import (
+	"github.com/amahrouchi/serena/internal/core/configuration"
 	"github.com/amahrouchi/serena/internal/core/tests"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -14,7 +15,7 @@ type ConfigSuite struct {
 // TestLoadConfig tests the LoadConfig method.
 func (s *ConfigSuite) TestLoadConfig() {
 	logger := tests.NewEmptyLogger()
-	err := LoadConfig(&Config{}, logger)
+	err := configuration.LoadConfig(&configuration.Config{}, logger)
 
 	s.NoError(err)
 }

@@ -1,8 +1,9 @@
-package handlers
+package handlers_test
 
 import (
 	"github.com/amahrouchi/serena/internal/core/configuration"
 	"github.com/amahrouchi/serena/internal/core/tests"
+	"github.com/amahrouchi/serena/internal/utils/infrastructure/handlers"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
 	"net/http/httptest"
@@ -13,7 +14,7 @@ import (
 type HealthzHandlerSuite struct {
 	suite.Suite
 
-	healthzHandler *HealthzHandler
+	healthzHandler *handlers.HealthzHandler
 }
 
 // SetupTest sets up the test suite...
@@ -26,22 +27,22 @@ func (s *HealthzHandlerSuite) SetupTest() {
 	}
 
 	// Create the handler
-	s.healthzHandler = &HealthzHandler{
-		logger: logger,
-		config: &config,
+	s.healthzHandler = &handlers.HealthzHandler{
+		Logger: logger,
+		Config: &config,
 	}
 }
 
 // TestNewHealthzHandler tests the NewHealthzHandler method.
 func (s *HealthzHandlerSuite) TestNewHealthzHandler() {
 	// Create the handler
-	handler := NewHealthzHandler(s.healthzHandler.logger, s.healthzHandler.config)
+	handler := handlers.NewHealthzHandler(s.healthzHandler.Logger, s.healthzHandler.Config)
 
 	// Assert handler is created
 	s.NotNil(handler)
-	s.IsType(&HealthzHandler{}, handler)
-	s.Equal(s.healthzHandler.logger, handler.logger)
-	s.Equal(s.healthzHandler.config, handler.config)
+	s.IsType(&handlers.HealthzHandler{}, handler)
+	s.Equal(s.healthzHandler.Logger, handler.Logger)
+	s.Equal(s.healthzHandler.Config, handler.Config)
 }
 
 // TestHandle tests the Handle method.
