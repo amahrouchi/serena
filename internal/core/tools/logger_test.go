@@ -1,7 +1,8 @@
-package tools
+package tools_test
 
 import (
 	"github.com/amahrouchi/serena/internal/core/configuration"
+	"github.com/amahrouchi/serena/internal/core/tools"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -17,7 +18,7 @@ func (s *LoggerSuite) TestNewLogger() {
 	// Test the logger creation for dev environment
 	s.Run("development", func() {
 		config := &configuration.Config{Env: configuration.EnvDev}
-		logger := NewLogger(config)
+		logger := tools.NewLogger(config)
 
 		s.NotNil(logger)
 		s.Equal(zerolog.DebugLevel, logger.GetLevel())
@@ -26,7 +27,7 @@ func (s *LoggerSuite) TestNewLogger() {
 	// Test the logger creation for prod environment
 	s.Run("production", func() {
 		config := &configuration.Config{Env: configuration.EnvProd}
-		logger := NewLogger(config)
+		logger := tools.NewLogger(config)
 
 		s.NotNil(logger)
 		s.Equal(zerolog.InfoLevel, logger.GetLevel())

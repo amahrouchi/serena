@@ -1,3 +1,3 @@
-package services
+package services_test
 
 // TODO: test
