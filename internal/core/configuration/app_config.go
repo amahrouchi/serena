@@ -35,6 +35,9 @@ func NewConfig() *Config {
 
 // init initializes the configuration.
 func (c *Config) init() {
+	// Load the environment variables
+	viper.AutomaticEnv()
+
 	// Load test environment variables
 	configFile := ".env." + os.Getenv("SRN_ENV")
 	viper.AddConfigPath("/app")
