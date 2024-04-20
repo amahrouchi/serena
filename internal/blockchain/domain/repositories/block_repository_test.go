@@ -21,34 +21,52 @@ type BlockRepositorySuite struct {
 
 // TestGetLastBlock tests the GetLastBlock method
 func (brs *BlockRepositorySuite) TestGetLastBlock() {
-	var db *gorm.DB
-	var repo repositories.BlockRepositoryInterface
-	tests.NewTestApp(false).Run(brs.T(), fx.Populate(&db, &repo))
+	// Test get last block (no errors)
+	brs.Run("test get last block (no errors)", func() {
+		var db *gorm.DB
+		var repo repositories.BlockRepositoryInterface
+		tests.NewTestApp(false).Run(brs.T(), fx.Populate(&db, &repo))
 
-	// Create a block
-	now := time.Now()
-	db.Create(&models.Block{
-		ID:           1,
-		Hash:         lo.ToPtr("hash"),
-		Payload:      "{\"key\": \"value\"}",
-		PreviousHash: "previous_hash",
-		CreatedAt:    now,
+		// Create a block
+		now := time.Now()
+		db.Create(&models.Block{
+			ID:           1,
+			Hash:         lo.ToPtr("hash"),
+			Payload:      "{\"key\": \"value\"}",
+			PreviousHash: "previous_hash",
+			CreatedAt:    now,
+		})
+
+		// Get the last block
+		block, err := repo.GetLastBlock()
+
+		brs.NoError(err)
+		brs.NotNil(block)
+		brs.Equal(uint(1), block.ID)
+		brs.Equal("hash", *block.Hash)
+		brs.Equal("{\"key\": \"value\"}", block.Payload)
+		brs.Equal("previous_hash", block.PreviousHash)
+		brs.Equal(now.Unix(), block.CreatedAt.Unix())
 	})
 
-	// Get the last block
-	block, err := repo.GetLastBlock()
+	// Test get last block (no block)
+	brs.Run("test get last block (no block)", func() {
+		var db *gorm.DB
+		var repo repositories.BlockRepositoryInterface
+		tests.NewTestApp(false).Run(brs.T(), fx.Populate(&db, &repo))
 
-	brs.NoError(err)
-	brs.NotNil(block)
-	brs.Equal(uint(1), block.ID)
-	brs.Equal("hash", *block.Hash)
-	brs.Equal("{\"key\": \"value\"}", block.Payload)
-	brs.Equal("previous_hash", block.PreviousHash)
-	brs.Equal(now.Unix(), block.CreatedAt.Unix())
+		// Get the last block
+		block, err := repo.GetLastBlock()
+
+		// Assert
+		brs.NoError(err)
+		brs.Nil(block)
+	})
 }
 
+// TestCreateGenesisBlock tests the CreateGenesisBlock method
 func (brs *BlockRepositorySuite) TestCreateGenesisBlock() {
-	// TODO: test for real
+	// TODO: implement
 }
 
 // TestBlockRepositorySuite launches the test suite
