@@ -6,7 +6,6 @@ import (
 	"github.com/rs/zerolog"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
-	"gorm.io/gorm"
 	"testing"
 )
 
@@ -32,10 +31,10 @@ func (ta *TestApp) Run(t *testing.T, opts ...fx.Option) *fxtest.App {
 		t,
 		app.Options,
 		fx.Options(opts...),
-		fx.Invoke(func(db *gorm.DB, logger *zerolog.Logger) {
+		fx.Invoke(func(migrator *database.Migrator, logger *zerolog.Logger) {
 			// Reset the test database (Postgres specific)
 			logger.Info().Msg("Resetting the test database")
-			database.ResetDatabase(db)
+			migrator.ResetDatabase()
 		}),
 	).RequireStart()
 }
