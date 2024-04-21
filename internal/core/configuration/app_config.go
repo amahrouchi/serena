@@ -4,6 +4,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 	"os"
+	"regexp"
 )
 
 const (
@@ -55,10 +56,80 @@ func (c *Config) init() {
 }
 
 // LoadConfig loads the configuration.
-func LoadConfig(config *Config, logger *zerolog.Logger) error {
+func LoadConfig(config *Config, configYaml *ConfigYaml, logger *zerolog.Logger) error {
 	logger.Debug().
 		Interface("config", config).
+		Interface("configYaml", configYaml).
 		Msgf("The config has been loaded")
 
 	return nil
+}
+
+// --------------------------------------------
+// --------------------------------------------
+// --------------------------------------------
+
+type ConfigYaml struct {
+	App AppConfig `mapstructure:"app"`
+}
+
+type AppConfig struct {
+	Env        string           `mapstructure:"env"`
+	Port       int              `mapstructure:"port"`
+	BlockChain BlockChainConfig `mapstructure:"blockchain"`
+	Db         DbConfig         `mapstructure:"db"`
+}
+
+type BlockChainConfig struct {
+	WorkerEnabled bool `mapstructure:"worker_enabled"`
+	Interval      int  `mapstructure:"interval"`
+}
+
+type DbConfig struct {
+	Host     string `mapstructure:"host"`
+	Port     string `mapstructure:"port"`
+	User     string `mapstructure:"user"`
+	Password string `mapstructure:"password"`
+}
+
+func NewConfigYaml() *ConfigYaml {
+	config := &ConfigYaml{}
+	config.init()
+
+	return config
+}
+
+func (c *ConfigYaml) init() {
+	// Load the configuration file
+	viper.SetConfigType("yaml")
+	viper.SetConfigName("config")
+	viper.AddConfigPath("/app/configs")
+	// TODO: overload with env files
+	if err := viper.ReadInConfig(); err != nil {
+		panic(err)
+	}
+
+	// Parse environment variables
+	allKeys := viper.AllKeys()
+	for _, key := range allKeys {
+		value := viper.GetString(key)
+		envRegex := `^\$\{([A-Z_]+)\}$`
+		match := regexp.MustCompile(envRegex).FindStringSubmatch(value)
+		if match != nil {
+			envVar := os.Getenv(match[1])
+			if envVar != "" {
+				//if envVar == "true" || envVar == "false" {
+				//	viper.Set(key, envVar == "true")
+				//} else {
+				viper.Set(key, envVar)
+				//}
+			}
+		}
+	}
+
+	// Unmarshal the configuration into the struct
+	err := viper.Unmarshal(&c)
+	if err != nil {
+		panic(err)
+	}
 }

@@ -1,0 +1,12 @@
+app:
+  env: ${SRN_ENV}
+  port: ${SRN_PORT}
+  blockchain:
+    worker_enabled: ${SRN_BLOCKCHAIN_WORKER_ENABLED}
+    interval: ${SRN_BLOCKCHAIN_INTERVAL}
+  db:
+    host: ${SRN_DB_HOST}
+    port: ${SRN_DB_PORT}
+    user: ${SRN_DB_USER}
+    password: ${SRN_DB_PASSWORD}
+    db_name: ${SRN_DB_NAME}

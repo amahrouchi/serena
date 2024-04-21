@@ -15,6 +15,7 @@ var Options = fx.Options(
 	// Declare core deps
 	fx.Provide(
 		configuration.NewConfig,
+		configuration.NewConfigYaml,
 		tools.NewLogger,
 		database.NewPostgresDbConnection,
 		database.NewMigrator,
