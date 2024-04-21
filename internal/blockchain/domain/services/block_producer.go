@@ -11,7 +11,7 @@ type BlockProducerInterface interface {
 	CalculateHash(block *models.Block) string
 	GetLastBlock() (*models.Block, error)
 	ProduceBlock()
-	CreateGenesisBlock() *models.Block
+	CreateGenesisBlock() (*models.Block, error)
 }
 
 // BlockProducer is responsible for producing blocks.
@@ -78,6 +78,6 @@ func (bp *BlockProducer) ProduceBlock() {
 }
 
 // CreateGenesisBlock create the genesis block
-func (bp *BlockProducer) CreateGenesisBlock() *models.Block {
+func (bp *BlockProducer) CreateGenesisBlock() (*models.Block, error) {
 	return bp.blockRepo.CreateGenesisBlock()
 }

@@ -16,7 +16,7 @@ import (
 type BlockRepositoryInterface interface {
 	CreateEmptyBlock()
 	GetLastBlock() (*models.Block, error)
-	CreateGenesisBlock() *models.Block
+	CreateGenesisBlock() (*models.Block, error)
 }
 
 // BlockRepository is a repository for blocks
@@ -72,15 +72,13 @@ func (br *BlockRepository) GetLastBlock() (*models.Block, error) {
 }
 
 // CreateGenesisBlock creates the genesis block
-func (br *BlockRepository) CreateGenesisBlock() *models.Block {
+func (br *BlockRepository) CreateGenesisBlock() (*models.Block, error) {
 	// Getting current time from NTP
 	now, err := br.timeSync.Current()
 	if err != nil {
 		br.logger.Error().Err(err).Msg("Cannot get current time while creating the genesis block")
-		panic(err)
+		return nil, err
 	}
-
-	br.logger.Debug().Msg("Creating genesis block")
 
 	// Hash
 	hash := sha256.New()
@@ -89,7 +87,8 @@ func (br *BlockRepository) CreateGenesisBlock() *models.Block {
 	// Payload
 	payload, err := json.Marshal(make(map[string]any))
 	if err != nil {
-		panic(err)
+		br.logger.Error().Err(err).Msg("Cannot marshal payload while creating the genesis block")
+		return nil, err
 	}
 
 	// Block construction
@@ -103,8 +102,9 @@ func (br *BlockRepository) CreateGenesisBlock() *models.Block {
 	// Save block to DB
 	br.db.Create(&block)
 	if block.ID == 0 {
-		panic(errors.New("cannot create genesis block"))
+		br.logger.Error().Msg("Genesis block failed to be created")
+		return nil, errors.New("cannot create genesis block")
 	}
 
-	return &block
+	return &block, nil
 }

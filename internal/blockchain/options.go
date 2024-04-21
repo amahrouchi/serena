@@ -15,7 +15,12 @@ var Options = fx.Options(
 	),
 	fx.Invoke(func(worker services.BlockWorkerInterface, config *configuration.Config) {
 		if config.BlockWorkerEnabled {
-			go worker.Start()
+			go func() {
+				err := worker.Start()
+				if err != nil {
+					panic(err)
+				}
+			}()
 		}
 	}),
 )

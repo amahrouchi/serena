@@ -4,6 +4,7 @@ import (
 	"github.com/amahrouchi/serena/internal/blockchain/domain/models"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/repositories"
 	"github.com/amahrouchi/serena/internal/core/tests"
+	"github.com/amahrouchi/serena/internal/core/tools"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/fx"
@@ -74,9 +75,10 @@ func (brs *BlockRepositorySuite) TestCreateGenesisBlock() {
 		defer app.RequireStop()
 
 		// Create genesis block
-		block := repo.CreateGenesisBlock()
+		block, err := repo.CreateGenesisBlock()
 
 		// Assert
+		brs.NoError(err)
 		brs.NotNil(block)
 		brs.Greater(block.ID, uint(0))
 		brs.Equal("", block.PreviousHash)

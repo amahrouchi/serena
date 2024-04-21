@@ -8,7 +8,7 @@ import (
 
 // BlockWorkerInterface is an interface for a block worker.
 type BlockWorkerInterface interface {
-	Start()
+	Start() error
 }
 
 // BlockWorker is a worker that processes blocks.
@@ -35,23 +35,25 @@ func NewBlockWorker(
 }
 
 // Start starts the block worker.
-func (bw *BlockWorker) Start() {
+func (bw *BlockWorker) Start() error {
 	bw.logger.Info().Msg("Starting block worker...")
 
 	// Try to get the reference time 5 times
 	refTime, err := bw.timeSync.Current()
 	if err != nil {
-		bw.logger.Error().Err(err).Msg("Failed to get reference time")
-		panic(err)
+		bw.logger.Error().Err(err).Msg("Failed to get reference time while starting block worker")
+		return err
 	}
 
 	// Load the last block
 	lastBlock, err := bw.producer.GetLastBlock()
 	if lastBlock == nil && err == nil {
-		lastBlock = bw.producer.CreateGenesisBlock()
+		lastBlock, err = bw.producer.CreateGenesisBlock()
+		if err != nil {
+			return err
+		}
 	} else if err != nil {
-		bw.logger.Error().Err(err).Msgf("Cannot retrieve last block")
-		panic(err)
+		return err
 	}
 
 	for {
