@@ -16,7 +16,8 @@ type ConfigSuite struct {
 // TestLoadConfig tests the LoadConfig method.
 func (s *ConfigSuite) TestLoadConfig() {
 	var config *configuration.Config
-	tests.NewTestApp(false).Run(s.T(), fx.Populate(&config))
+	app := tests.NewTestApp(false).Run(s.T(), fx.Populate(&config))
+	defer app.RequireStop()
 
 	s.Equal("test", config.Env)
 	s.NotEmpty(config.Port)

@@ -21,7 +21,7 @@ func NewTimeSync() *TimeSync {
 
 // Current returns the current time.
 func (ts *TimeSync) Current() (*time.Time, error) {
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 10; i++ {
 		currTime, err := ntp.Time("time.google.com") // TODO: use several sources
 		if err == nil {
 			return &currTime, nil

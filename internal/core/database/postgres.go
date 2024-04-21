@@ -34,3 +34,15 @@ func AutoMigrate(db *gorm.DB) {
 		panic(err)
 	}
 }
+
+// ResetDatabase resets the database
+func ResetDatabase(db *gorm.DB) {
+	db.Exec("DROP SCHEMA IF EXISTS public CASCADE")
+	db.Exec("CREATE SCHEMA public")
+
+	// Migrate the schema (Postgres specific)
+	db.Exec("BEGIN")
+	db.Exec("SELECT pg_advisory_xact_lock(12345)")
+	AutoMigrate(db)
+	db.Exec("COMMIT")
+}

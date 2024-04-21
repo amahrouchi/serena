@@ -2,7 +2,6 @@ package tests
 
 import (
 	"github.com/amahrouchi/serena/internal/app"
-	"github.com/amahrouchi/serena/internal/core/configuration"
 	"github.com/amahrouchi/serena/internal/core/database"
 	"github.com/rs/zerolog"
 	"go.uber.org/fx"
@@ -24,21 +23,19 @@ func NewTestApp(enableFxLogs bool) *TestApp {
 }
 
 // Run runs the test application.
-func (ta *TestApp) Run(t *testing.T, opts ...fx.Option) {
+func (ta *TestApp) Run(t *testing.T, opts ...fx.Option) *fxtest.App {
 	if !ta.EnableFxLogs {
 		opts = append(opts, fx.NopLogger)
 	}
 
-	fxtest.New(
+	return fxtest.New(
 		t,
 		app.Options,
-		fx.Invoke(func(config *configuration.Config, db *gorm.DB, logger *zerolog.Logger) {
-			// Reset the test database
-			logger.Info().Msg("Resetting test database")
-			db.Exec("DROP SCHEMA IF EXISTS public CASCADE")
-			db.Exec("CREATE SCHEMA public")
-			database.AutoMigrate(db)
-		}),
 		fx.Options(opts...),
-	).RequireStart().RequireStop()
+		fx.Invoke(func(db *gorm.DB, logger *zerolog.Logger) {
+			// Reset the test database (Postgres specific)
+			logger.Info().Msg("Resetting the test database")
+			database.ResetDatabase(db)
+		}),
+	).RequireStart()
 }

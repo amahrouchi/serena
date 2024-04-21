@@ -15,8 +15,6 @@ import (
 // BlockRepositorySuite the test suite for the BlockRepository struct
 type BlockRepositorySuite struct {
 	suite.Suite
-
-	repositories.BlockRepository
 }
 
 // TestGetLastBlock tests the GetLastBlock method
@@ -25,7 +23,8 @@ func (brs *BlockRepositorySuite) TestGetLastBlock() {
 	brs.Run("test get last block (no errors)", func() {
 		var db *gorm.DB
 		var repo repositories.BlockRepositoryInterface
-		tests.NewTestApp(false).Run(brs.T(), fx.Populate(&db, &repo))
+		app := tests.NewTestApp(false).Run(brs.T(), fx.Populate(&db, &repo))
+		defer app.RequireStop()
 
 		// Create a block
 		now := time.Now()
@@ -47,13 +46,15 @@ func (brs *BlockRepositorySuite) TestGetLastBlock() {
 		brs.Equal("{\"key\": \"value\"}", block.Payload)
 		brs.Equal("previous_hash", block.PreviousHash)
 		brs.Equal(now.Unix(), block.CreatedAt.Unix())
+
 	})
 
 	// Test get last block (no block)
 	brs.Run("test get last block (no block)", func() {
 		var db *gorm.DB
 		var repo repositories.BlockRepositoryInterface
-		tests.NewTestApp(false).Run(brs.T(), fx.Populate(&db, &repo))
+		app := tests.NewTestApp(false).Run(brs.T(), fx.Populate(&db, &repo))
+		defer app.RequireStop()
 
 		// Get the last block
 		block, err := repo.GetLastBlock()
@@ -66,7 +67,22 @@ func (brs *BlockRepositorySuite) TestGetLastBlock() {
 
 // TestCreateGenesisBlock tests the CreateGenesisBlock method
 func (brs *BlockRepositorySuite) TestCreateGenesisBlock() {
-	// TODO: implement
+	// Test create genesis block (no errors)
+	brs.Run("test create genesis block (no errors)", func() {
+		var repo repositories.BlockRepositoryInterface
+		app := tests.NewTestApp(false).Run(brs.T(), fx.Populate(&repo))
+		defer app.RequireStop()
+
+		// Create genesis block
+		block := repo.CreateGenesisBlock()
+
+		// Assert
+		brs.NotNil(block)
+		brs.Greater(block.ID, uint(0))
+		brs.Equal("", block.PreviousHash)
+		brs.NotNil(block.Hash)
+		brs.Equal("{}", block.Payload)
+	})
 }
 
 // TestBlockRepositorySuite launches the test suite
