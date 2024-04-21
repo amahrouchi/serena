@@ -100,8 +100,8 @@ func (br *BlockRepository) CreateGenesisBlock() (*models.Block, error) {
 	}
 
 	// Save block to DB
-	br.db.Create(&block)
-	if block.ID == 0 {
+	result := br.db.Create(&block)
+	if result.Error != nil {
 		br.logger.Error().Msg("Genesis block failed to be created")
 		return nil, errors.New("cannot create genesis block")
 	}

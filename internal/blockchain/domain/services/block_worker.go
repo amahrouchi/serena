@@ -48,7 +48,7 @@ func (bw *BlockWorker) Start() error {
 	// Load the last block
 	lastBlock, err := bw.producer.GetLastBlock()
 	if lastBlock == nil && err == nil {
-		lastBlock, err = bw.producer.CreateGenesisBlock()
+		_, err = bw.producer.CreateGenesisBlock()
 		if err != nil {
 			return err
 		}
