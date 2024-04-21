@@ -1,6 +1,7 @@
 package repositories_test
 
 import (
+	"errors"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/models"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/repositories"
 	"github.com/amahrouchi/serena/internal/core/tests"
@@ -84,6 +85,33 @@ func (brs *BlockRepositorySuite) TestCreateGenesisBlock() {
 		brs.Equal("", block.PreviousHash)
 		brs.NotNil(block.Hash)
 		brs.Equal("{}", block.Payload)
+	})
+
+	// Test create genesis block (fail to get time)
+	brs.Run("test create genesis block (fail to get time)", func() {
+		// Prepare deps to populate
+		var repo repositories.BlockRepositoryInterface
+
+		// Run the test app
+		app := tests.NewTestApp(false).Run(
+			brs.T(),
+			fx.Populate(&repo),
+			fx.Decorate(func() tools.TimeSyncInterface {
+				mockTimeSync := new(tools.TimeSyncMock)
+				mockTimeSync.On("Current").Return(nil, errors.New("error"))
+
+				return mockTimeSync
+			}),
+		)
+		defer app.RequireStop()
+
+		// Create genesis block
+		block, err := repo.CreateGenesisBlock()
+
+		// Assert
+		brs.Nil(block)
+		brs.Error(err)
+		brs.Equal("error", err.Error())
 	})
 }
 
