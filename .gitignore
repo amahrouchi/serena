@@ -7,3 +7,4 @@ build
 .env
 .env.dev
 .env.test
+configs/config.*.yml

@@ -69,10 +69,14 @@ func LoadConfig(config *Config, configYaml *ConfigYaml, logger *zerolog.Logger) 
 // --------------------------------------------
 // --------------------------------------------
 
+const configPath = "/app/configs"
+
+// ConfigYaml represents the whole application configuration.
 type ConfigYaml struct {
 	App AppConfig `mapstructure:"app"`
 }
 
+// AppConfig represents the application specific configuration.
 type AppConfig struct {
 	Env        string           `mapstructure:"env"`
 	Port       int              `mapstructure:"port"`
@@ -80,11 +84,13 @@ type AppConfig struct {
 	Db         DbConfig         `mapstructure:"db"`
 }
 
+// BlockChainConfig represents the blockchain specific configuration.
 type BlockChainConfig struct {
 	WorkerEnabled bool `mapstructure:"worker_enabled"`
 	Interval      int  `mapstructure:"interval"`
 }
 
+// DbConfig represents the database specific configuration.
 type DbConfig struct {
 	Host     string `mapstructure:"host"`
 	Port     string `mapstructure:"port"`
@@ -92,19 +98,32 @@ type DbConfig struct {
 	Password string `mapstructure:"password"`
 }
 
+// NewConfigYaml creates a new ConfigYaml.
 func NewConfigYaml() *ConfigYaml {
 	config := &ConfigYaml{}
-	config.init()
+	config.init("config", false)
 
+	// Overload with env files
+	env := os.Getenv("SRN_ENV")
+	envConfig := "config." + env
+	stats, err := os.Stat(configPath + "/" + envConfig + ".yml")
+	if err == nil && !stats.IsDir() {
+		config.init(envConfig, true)
+	}
 	return config
 }
 
-func (c *ConfigYaml) init() {
+// init initializes the configuration.
+func (c *ConfigYaml) init(configName string, reset bool) {
+	// Reset the configuration
+	if reset {
+		viper.Reset()
+	}
+
 	// Load the configuration file
 	viper.SetConfigType("yaml")
-	viper.SetConfigName("config")
-	viper.AddConfigPath("/app/configs")
-	// TODO: overload with env files
+	viper.AddConfigPath(configPath)
+	viper.SetConfigName(configName)
 	if err := viper.ReadInConfig(); err != nil {
 		panic(err)
 	}
@@ -118,17 +137,13 @@ func (c *ConfigYaml) init() {
 		if match != nil {
 			envVar := os.Getenv(match[1])
 			if envVar != "" {
-				//if envVar == "true" || envVar == "false" {
-				//	viper.Set(key, envVar == "true")
-				//} else {
 				viper.Set(key, envVar)
-				//}
 			}
 		}
 	}
 
 	// Unmarshal the configuration into the struct
-	err := viper.Unmarshal(&c)
+	err := viper.Unmarshal(c)
 	if err != nil {
 		panic(err)
 	}
