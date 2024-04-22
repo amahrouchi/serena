@@ -20,8 +20,8 @@ func RegisterHooks(
 		OnStart: func(ctx context.Context) error {
 			// Start the server
 			go func() {
-				logger.Info().Msgf("Starting HTTP server on port %d", c.Port)
-				err := e.Start(":" + strconv.Itoa(c.Port))
+				logger.Info().Msgf("Starting HTTP server on port %d", c.App.Port)
+				err := e.Start(":" + strconv.Itoa(c.App.Port))
 				if err != nil {
 					e.Logger.Warn("The Echo server may have stopped unexpectedly. error=%+v", err)
 				}

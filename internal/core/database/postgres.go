@@ -13,7 +13,7 @@ func NewPostgresDbConnection(
 	logger *zerolog.Logger,
 ) *gorm.DB {
 	logger.Info().Msg("Connecting to the database...")
-	dsn := "host=" + config.DbHost + " user=" + config.DbUser + " password=" + config.DbPassword + " dbname=" + config.DbName + " port=" + config.DbPort + " sslmode=disable TimeZone=UTC"
+	dsn := "host=" + config.App.Db.Host + " user=" + config.App.Db.User + " password=" + config.App.Db.Password + " dbname=" + config.App.Db.DbName + " port=" + config.App.Db.Port + " sslmode=disable TimeZone=UTC"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)

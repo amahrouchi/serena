@@ -89,7 +89,7 @@ func (bw *BlockWorker) Start() error {
 
 		// Create the block after the block duration has passed
 		diff := currTime.UnixMilli() - refTime.UnixMilli()
-		if diff >= int64(bw.config.BlockDuration*1000) {
+		if diff >= int64(bw.config.App.BlockChain.Interval*1000) {
 			bw.logger.Info().Msg("Closing current block: generating hash...")
 			bw.logger.Info().Msg("Switching current block: adding prev hash...")
 			bw.logger.Info().Msg("Creating a new next block...")

@@ -19,15 +19,15 @@ func (s *ConfigSuite) TestLoadConfig() {
 	app := tests.NewTestApp(false).Run(s.T(), fx.Populate(&config))
 	defer app.RequireStop()
 
-	s.Equal("test", config.Env)
-	s.NotEmpty(config.Port)
-	s.NotEmpty(config.DbHost)
-	s.NotEmpty(config.DbPort)
-	s.NotEmpty(config.DbUser)
-	s.NotEmpty(config.DbPassword)
-	s.NotEmpty(config.DbName)
-	s.False(config.BlockWorkerEnabled)
-	s.NotEmpty(config.BlockDuration)
+	s.Equal("test", config.App.Env)
+	s.NotEmpty(config.App.Port)
+	s.NotEmpty(config.App.Db.Host)
+	s.NotEmpty(config.App.Db.Port)
+	s.NotEmpty(config.App.Db.User)
+	s.NotEmpty(config.App.Db.Password)
+	s.NotEmpty(config.App.Db.DbName)
+	s.False(config.App.BlockChain.WorkerEnabled)
+	s.NotEmpty(config.App.BlockChain.Interval)
 }
 
 // TestNewConfig tests the NewConfig method.

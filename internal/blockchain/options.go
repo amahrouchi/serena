@@ -14,7 +14,7 @@ var Options = fx.Options(
 		fx.Annotate(repositories.NewBlockRepository, fx.As(new(repositories.BlockRepositoryInterface))),
 	),
 	fx.Invoke(func(worker services.BlockWorkerInterface, config *configuration.Config) {
-		if config.BlockWorkerEnabled {
+		if config.App.BlockChain.WorkerEnabled {
 			go func() {
 				err := worker.Start()
 				if err != nil {

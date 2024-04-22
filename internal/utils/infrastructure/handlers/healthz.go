@@ -32,7 +32,7 @@ func (h *HealthzHandler) Route() http.Route {
 // Handle handles the health check endpoint.
 func (h *HealthzHandler) Handle(c echo.Context) error {
 	h.Logger.Info().Msg("Health check!")
-	h.Logger.Debug().Msgf("Config env from handler: %+v", h.Config.Env)
+	h.Logger.Debug().Msgf("Config env from handler: %+v", h.Config.App.Env)
 
 	return c.JSON(200, map[string]string{"status": "ok"})
 }
