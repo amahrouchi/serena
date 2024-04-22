@@ -17,7 +17,7 @@ type LoggerSuite struct {
 func (s *LoggerSuite) TestNewLogger() {
 	// Test the logger creation for dev environment
 	s.Run("development", func() {
-		config := &configuration.Config{Env: configuration.EnvDev}
+		config := &configuration.Config{App: &configuration.AppConfig{Env: configuration.EnvDev}}
 		logger := tools.NewLogger(config)
 
 		s.NotNil(logger)
@@ -26,7 +26,7 @@ func (s *LoggerSuite) TestNewLogger() {
 
 	// Test the logger creation for prod environment
 	s.Run("production", func() {
-		config := &configuration.Config{Env: configuration.EnvProd}
+		config := &configuration.Config{App: &configuration.AppConfig{Env: configuration.EnvProd}}
 		logger := tools.NewLogger(config)
 
 		s.NotNil(logger)

@@ -22,8 +22,10 @@ func (s *HealthzHandlerSuite) SetupTest() {
 	// Create the logger & config
 	logger := tests.NewEmptyLogger()
 	config := configuration.Config{
-		Env:  configuration.EnvDev,
-		Port: 8080,
+		App: &configuration.AppConfig{
+			Env:  configuration.EnvDev,
+			Port: 8080,
+		},
 	}
 
 	// Create the handler

@@ -30,15 +30,15 @@ const configPath = "/app/configs"
 
 // Config represents the whole application configuration.
 type Config struct {
-	App AppConfig `mapstructure:"app"`
+	App *AppConfig `mapstructure:"app"`
 }
 
 // AppConfig represents the application specific configuration.
 type AppConfig struct {
-	Env        string           `mapstructure:"env"`
-	Port       int              `mapstructure:"port"`
-	BlockChain BlockChainConfig `mapstructure:"blockchain"`
-	Db         DbConfig         `mapstructure:"db"`
+	Env        string            `mapstructure:"env"`
+	Port       int               `mapstructure:"port"`
+	BlockChain *BlockChainConfig `mapstructure:"blockchain"`
+	Db         *DbConfig         `mapstructure:"db"`
 }
 
 // BlockChainConfig represents the blockchain specific configuration.
