@@ -19,6 +19,20 @@ type BlockRepositorySuite struct {
 	suite.Suite
 }
 
+// TestCreateEmptyBlock tests the CreateEmptyBlock method
+func (brs *BlockRepositorySuite) TestCreateEmptyBlock() {
+	var repo repositories.BlockRepositoryInterface
+	app := tests.NewTestApp(false).Run(brs.T(), fx.Populate(&repo))
+	defer app.RequireStop()
+
+	// Create empty block
+	err := repo.CreateEmptyBlock()
+
+	// Assert
+	brs.Error(err)
+	brs.Equal("not implemented", err.Error())
+}
+
 // TestGetLastBlock tests the GetLastBlock method
 func (brs *BlockRepositorySuite) TestGetLastBlock() {
 	// Test get last block (no errors)

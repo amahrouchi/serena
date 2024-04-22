@@ -14,7 +14,7 @@ import (
 
 // BlockRepositoryInterface is an interface for a block repository
 type BlockRepositoryInterface interface {
-	CreateEmptyBlock()
+	CreateEmptyBlock() error
 	GetLastBlock() (*models.Block, error)
 	CreateGenesisBlock() (*models.Block, error)
 }
@@ -40,9 +40,11 @@ func NewBlockRepository(
 }
 
 // CreateEmptyBlock creates an empty block
-func (br *BlockRepository) CreateEmptyBlock() {
+func (br *BlockRepository) CreateEmptyBlock() error {
 	br.logger.Debug().Msg("Creating an empty block")
+
 	// TODO: implement
+	return errors.New("not implemented")
 }
 
 // GetLastBlock gets the last block
