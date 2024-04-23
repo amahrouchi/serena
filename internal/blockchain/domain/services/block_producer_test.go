@@ -1,7 +1,10 @@
 package services_test
 
 import (
+	"github.com/amahrouchi/serena/internal/blockchain/domain/models"
+	"github.com/amahrouchi/serena/internal/blockchain/domain/repositories"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/services"
+	"github.com/amahrouchi/serena/internal/core/tests"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -20,6 +23,20 @@ func (bps *BlockProducerSuite) TestCalculateHash() {
 
 	// Assert
 	bps.Equal("", hash)
+}
+
+// TestGetLastBlock tests the GetLastBlock method.
+func (bps *BlockProducerSuite) TestGetLastBlock() {
+	repo := new(repositories.BlockRepositoryMock)
+	repo.On("GetLastBlock").Return(&models.Block{}, nil)
+
+	// Get last block
+	producer := services.NewBlockProducer(repo, tests.NewEmptyLogger())
+	block, err := producer.GetLastBlock()
+
+	// Assert
+	bps.NoError(err)
+	bps.NotNil(block)
 }
 
 // TestGetLastBlock runs the BlockProducerSuite.-
