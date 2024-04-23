@@ -74,7 +74,7 @@ func (bp *BlockProducer) GetLastBlock() (*models.Block, error) {
 // ProduceBlock produces a block.
 func (bp *BlockProducer) ProduceBlock() {
 	bp.logger.Debug().Msg("Producing a block...")
-	bp.blockRepo.CreateEmptyBlock()
+	_ = bp.blockRepo.CreateEmptyBlock()
 }
 
 // CreateGenesisBlock create the genesis block

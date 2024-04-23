@@ -39,6 +39,33 @@ func (bps *BlockProducerSuite) TestGetLastBlock() {
 	bps.NotNil(block)
 }
 
+// TestProduceBlock tests the ProduceBlock method.
+func (bps *BlockProducerSuite) TestProduceBlock() {
+	repo := new(repositories.BlockRepositoryMock)
+	repo.On("CreateEmptyBlock").Return(nil)
+
+	// Produce block
+	producer := services.NewBlockProducer(repo, tests.NewEmptyLogger())
+	producer.ProduceBlock()
+
+	// Assert
+	repo.AssertExpectations(bps.T())
+}
+
+// TestCreateGenesisBlock tests the CreateGenesisBlock method.
+func (bps *BlockProducerSuite) TestCreateGenesisBlock() {
+	repo := new(repositories.BlockRepositoryMock)
+	repo.On("CreateGenesisBlock").Return(&models.Block{}, nil)
+
+	// Create genesis block
+	producer := services.NewBlockProducer(repo, tests.NewEmptyLogger())
+	block, err := producer.CreateGenesisBlock()
+
+	// Assert
+	bps.NoError(err)
+	bps.NotNil(block)
+}
+
 // TestGetLastBlock runs the BlockProducerSuite.-
 func TestBlockProducerSuite(t *testing.T) {
 	suite.Run(t, new(BlockProducerSuite))
