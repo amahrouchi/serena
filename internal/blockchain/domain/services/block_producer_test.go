@@ -39,14 +39,14 @@ func (bps *BlockProducerSuite) TestGetLastBlock() {
 	bps.NotNil(block)
 }
 
-// TestProduceBlock tests the ProduceBlock method.
+// TestProduceBlock tests the CreateEmptyBlock method.
 func (bps *BlockProducerSuite) TestProduceBlock() {
 	repo := new(repositories.BlockRepositoryMock)
 	repo.On("CreateEmptyBlock").Return(nil)
 
 	// Produce block
 	producer := services.NewBlockProducer(repo, tests.NewEmptyLogger())
-	producer.ProduceBlock()
+	producer.CreateEmptyBlock()
 
 	// Assert
 	repo.AssertExpectations(bps.T())

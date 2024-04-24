@@ -3,7 +3,6 @@ package repositories
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/models"
 	"github.com/amahrouchi/serena/internal/core/tools"
@@ -14,7 +13,7 @@ import (
 
 // BlockRepositoryInterface is an interface for a block repository
 type BlockRepositoryInterface interface {
-	CreateEmptyBlock() error
+	CreateEmptyBlock(prevHash *string, status models.BlockStatus) (*models.Block, error)
 	GetLastBlock() (*models.Block, error)
 	CreateGenesisBlock() (*models.Block, error)
 }
@@ -40,11 +39,33 @@ func NewBlockRepository(
 }
 
 // CreateEmptyBlock creates an empty block
-func (br *BlockRepository) CreateEmptyBlock() error {
-	br.logger.Debug().Msg("Creating an empty block")
+func (br *BlockRepository) CreateEmptyBlock(prevHash *string, status models.BlockStatus) (*models.Block, error) {
+	// Getting current time from NTP
+	now, err := br.timeSync.Current()
+	if err != nil {
+		br.logger.Error().Err(err).Msg("Cannot get current time while creating an empty block")
+		return nil, err
+	}
 
-	// TODO: implement
-	return errors.New("not implemented")
+	// Block construction
+	block := models.Block{
+		Status:       status,
+		PreviousHash: prevHash,
+		Payload:      "{}",
+		CreatedAt:    *now,
+	}
+	result := br.db.Create(&block)
+
+	if result.Error != nil {
+		br.logger.Error().Msg("Empty block failed to be created")
+		return nil, errors.New("cannot create empty block")
+	}
+
+	br.logger.Info().
+		Interface("block", block).
+		Msg("Empty block created")
+
+	return &block, nil
 }
 
 // GetLastBlock gets the last block
@@ -54,6 +75,7 @@ func (br *BlockRepository) GetLastBlock() (*models.Block, error) {
 	// Loading last finalized block
 	block := models.Block{}
 	result := br.db.Not(&models.Block{Hash: nil}).
+		Where(&models.Block{Status: models.BlockStatusActive}).
 		Order("created_at").
 		Last(&block)
 
@@ -66,8 +88,7 @@ func (br *BlockRepository) GetLastBlock() (*models.Block, error) {
 	}
 
 	br.logger.Info().
-		Uint("lastBlockId", block.ID).
-		Str("lastBlockHash", *block.Hash).
+		Interface("block", block).
 		Msg("Last block loaded")
 
 	return &block, nil
@@ -86,26 +107,37 @@ func (br *BlockRepository) CreateGenesisBlock() (*models.Block, error) {
 	hash := sha256.New()
 	hash.Write([]byte(lo.RandomString(40, lo.LettersCharset)))
 
-	// Payload
-	payload, err := json.Marshal(make(map[string]any))
-	if err != nil {
-		br.logger.Error().Err(err).Msg("Cannot marshal payload while creating the genesis block")
-		return nil, err
-	}
+	// TODO:
+	//  - put the blocks creation in a transaction
+	//  - a bit tricky with gorm, we need to use the tx object instead of the db object, see how to do it...
 
 	// Block construction
 	block := models.Block{
-		PreviousHash: "",
-		CreatedAt:    *now,
+		Status:       models.BlockStatusClosed,
+		PreviousHash: lo.ToPtr("genesis"),
+		Payload:      "{}",
 		Hash:         lo.ToPtr(hex.EncodeToString(hash.Sum(nil))),
-		Payload:      string(payload),
+		CreatedAt:    *now,
 	}
 
 	// Save block to DB
 	result := br.db.Create(&block)
 	if result.Error != nil {
 		br.logger.Error().Msg("Genesis block failed to be created")
+
 		return nil, errors.New("cannot create genesis block")
+	}
+
+	// Create the active block
+	_, err = br.CreateEmptyBlock(block.Hash, models.BlockStatusActive)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create the next block
+	_, err = br.CreateEmptyBlock(nil, models.BlockStatusPending)
+	if err != nil {
+		return nil, err
 	}
 
 	return &block, nil

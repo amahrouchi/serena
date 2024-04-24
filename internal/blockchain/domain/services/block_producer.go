@@ -10,7 +10,7 @@ import (
 type BlockProducerInterface interface {
 	CalculateHash(block *models.Block) string
 	GetLastBlock() (*models.Block, error)
-	ProduceBlock()
+	CreateEmptyBlock(prevHash *string, status models.BlockStatus) (*models.Block, error)
 	CreateGenesisBlock() (*models.Block, error)
 }
 
@@ -71,10 +71,9 @@ func (bp *BlockProducer) GetLastBlock() (*models.Block, error) {
 	return bp.blockRepo.GetLastBlock()
 }
 
-// ProduceBlock produces a block.
-func (bp *BlockProducer) ProduceBlock() {
-	bp.logger.Debug().Msg("Producing a block...")
-	_ = bp.blockRepo.CreateEmptyBlock()
+// CreateEmptyBlock produces a block.
+func (bp *BlockProducer) CreateEmptyBlock(prevHash *string, status models.BlockStatus) (*models.Block, error) {
+	return bp.blockRepo.CreateEmptyBlock(prevHash, status)
 }
 
 // CreateGenesisBlock create the genesis block
