@@ -12,17 +12,21 @@ type TimeSyncInterface interface {
 }
 
 // TimeSync is a service for syncing time.
-type TimeSync struct{}
+type TimeSync struct {
+	NtpServer string
+}
 
 // NewTimeSync creates a new TimeSync service.
 func NewTimeSync() *TimeSync {
-	return &TimeSync{}
+	return &TimeSync{
+		NtpServer: "time.google.com", // TODO: use several sources
+	}
 }
 
 // Current returns the current time.
 func (ts *TimeSync) Current() (*time.Time, error) {
 	for i := 0; i < 10; i++ {
-		currTime, err := ntp.Time("time.google.com") // TODO: use several sources
+		currTime, err := ntp.Time(ts.NtpServer)
 		if err == nil {
 			return &currTime, nil
 		}
