@@ -116,7 +116,8 @@ func (brs *BlockRepositorySuite) TestCreateGenesisBlock() {
 	// Test create genesis block (no errors)
 	brs.Run("test create genesis block (no errors)", func() {
 		var repo repositories.BlockRepositoryInterface
-		app := tests.NewTestApp(false).Run(brs.T(), fx.Populate(&repo))
+		var db *gorm.DB
+		app := tests.NewTestApp(false).Run(brs.T(), fx.Populate(&repo, &db))
 		defer app.RequireStop()
 
 		// Create genesis block
@@ -126,9 +127,18 @@ func (brs *BlockRepositorySuite) TestCreateGenesisBlock() {
 		brs.NoError(err)
 		brs.NotNil(block)
 		brs.Greater(block.ID, uint(0))
+		brs.Equal(models.BlockStatusClosed, block.Status)
 		brs.Equal("genesis", *block.PreviousHash)
 		brs.NotNil(block.Hash)
 		brs.Equal("{}", block.Payload)
+
+		// Test the creation of the active and pending blocks
+		var blocks []models.Block
+		allBlock := db.Order("id ASC").Find(&blocks)
+		brs.NoError(allBlock.Error)
+		brs.Equal(3, len(blocks))
+		brs.Equal(models.BlockStatusActive, blocks[1].Status)
+		brs.Equal(models.BlockStatusPending, blocks[2].Status)
 	})
 
 	// Test create genesis block (fail to get time)
