@@ -133,36 +133,58 @@ func (br *BlockRepository) CreateEmptyBlock(prevHash *string, status models.Bloc
 // SwitchActiveBlock closes the active block, activates the pending one and creates a new pending block
 func (br *BlockRepository) SwitchActiveBlock() error {
 	return br.db.Transaction(func(tx *gorm.DB) error {
-		// Ensure following blocks are created in the same transaction
+		// Ensure following queries are run in the transaction
 		db := br.db
 		br.db = tx
 		defer func() {
 			br.db = db
 		}()
 
+		// Load the active block
 		activeBlock, err := br.GetActiveBlock()
 		if err != nil {
 			return err
 		}
-		br.logger.Debug().Interface("block", activeBlock).Msg("Active block loaded")
-		// TODO: if no active block, create one and link it to the last closed block
 
+		// If no active block, return an error
+		if activeBlock == nil {
+			return errors.New("no active block found")
+		}
+
+		br.logger.Debug().Interface("block", activeBlock).Msg("Active block loaded")
+
+		// Close the active block
 		err = br.Close(activeBlock)
 		if err != nil {
 			return err
 		}
 		br.logger.Debug().Interface("block", activeBlock).Msg("Active block closed")
 
+		// Calculate hash of the active block
+		// TODO: create a service to calculate the hash
+		activeBlock.Hash = lo.ToPtr(lo.RandomString(64, lo.AlphanumericCharset))
+		err = br.Update(activeBlock)
+		if err != nil {
+			return err
+		}
+		br.logger.Debug().Interface("block", activeBlock).Msg("Active block hash calculated")
+
+		// Load the pending block
 		newActiveBlock, err := br.GetPendingBlock()
 		if err != nil {
 			return err
 		}
 		br.logger.Debug().Interface("block", newActiveBlock).Msg("Pending block loaded")
-		// TODO: if no pending block, create one and link it to the last active block
 
-		err = br.Activate(newActiveBlock)
-		if err != nil {
-			return err
+		// Activate the pending block
+		if newActiveBlock != nil {
+			newActiveBlock.PreviousHash = activeBlock.Hash
+			err = br.Activate(newActiveBlock)
+			if err != nil {
+				return err
+			}
+		} else {
+			newActiveBlock, err = br.CreateEmptyBlock(activeBlock.Hash, models.BlockStatusActive)
 		}
 		br.logger.Debug().Interface("block", newActiveBlock).Msg("Pending block activated")
 
@@ -172,21 +194,6 @@ func (br *BlockRepository) SwitchActiveBlock() error {
 			return err
 		}
 		br.logger.Debug().Interface("block", pendingBlock).Msg("New pending block created")
-
-		// Calculate hash of the active block
-		activeBlock.Hash = lo.ToPtr(lo.RandomString(64, lo.AlphanumericCharset)) // TODO: create a service to calculate the hash
-		err = br.Update(activeBlock)
-		if err != nil {
-			return err
-		}
-		br.logger.Debug().Interface("block", activeBlock).Msg("Active block hash calculated")
-
-		// Link the new active block to the closed block
-		newActiveBlock.PreviousHash = activeBlock.Hash
-		err = br.Update(newActiveBlock)
-		if err != nil {
-			return err
-		}
 
 		return nil
 	})
