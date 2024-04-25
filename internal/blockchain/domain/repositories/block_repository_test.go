@@ -2,6 +2,7 @@ package repositories_test
 
 import (
 	"errors"
+	"fmt"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/models"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/repositories"
 	"github.com/amahrouchi/serena/internal/core/tests"
@@ -21,22 +22,49 @@ type BlockRepositorySuite struct {
 
 // TestCreateEmptyBlock tests the CreateEmptyBlock method
 func (brs *BlockRepositorySuite) TestCreateEmptyBlock() {
-	var repo repositories.BlockRepositoryInterface
-	app := tests.NewTestApp(false).Run(brs.T(), fx.Populate(&repo))
-	defer app.RequireStop()
+	brs.Run("test create empty block (no prev hash)", func() {
+		var repo repositories.BlockRepositoryInterface
+		app := tests.NewTestApp(false).Run(brs.T(), fx.Populate(&repo))
+		defer app.RequireStop()
 
-	// Create empty block
-	err := repo.CreateEmptyBlock()
+		// Create empty block
+		block, err := repo.CreateEmptyBlock(lo.ToPtr("previous_hash"), models.BlockStatusPending)
 
-	// Assert
-	brs.Error(err)
-	brs.Equal("not implemented", err.Error())
+		// Assert
+		brs.NoError(err)
+		brs.NotNil(block)
+		brs.Greater(block.ID, uint(0))
+		brs.Equal("previous_hash", *block.PreviousHash)
+		brs.Nil(block.Hash)
+		brs.Equal("{}", block.Payload)
+		brs.Equal(models.BlockStatusPending, block.Status)
+		brs.IsType(time.Time{}, block.CreatedAt)
+	})
+
+	brs.Run("test create empty block (with prev hash)", func() {
+		var repo repositories.BlockRepositoryInterface
+		app := tests.NewTestApp(false).Run(brs.T(), fx.Populate(&repo))
+		defer app.RequireStop()
+
+		// Create empty block
+		block, err := repo.CreateEmptyBlock(nil, models.BlockStatusPending)
+
+		// Assert
+		brs.NoError(err)
+		brs.NotNil(block)
+		brs.Greater(block.ID, uint(0))
+		brs.Nil(block.PreviousHash)
+		brs.Nil(block.Hash)
+		brs.Equal("{}", block.Payload)
+		brs.Equal(models.BlockStatusPending, block.Status)
+		brs.IsType(time.Time{}, block.CreatedAt)
+	})
 }
 
 // TestGetLastBlock tests the GetActiveBlock method
-func (brs *BlockRepositorySuite) TestGetLastBlock() {
+func (brs *BlockRepositorySuite) TestGetActiveBlock() {
 	// Test get last block (no errors)
-	brs.Run("test get last block (no errors)", func() {
+	brs.Run("test get active block (no errors)", func() {
 		var db *gorm.DB
 		var repo repositories.BlockRepositoryInterface
 		app := tests.NewTestApp(false).Run(brs.T(), fx.Populate(&db, &repo))
@@ -46,27 +74,29 @@ func (brs *BlockRepositorySuite) TestGetLastBlock() {
 		now := time.Now()
 		db.Create(&models.Block{
 			ID:           1,
+			Status:       models.BlockStatusPending,
 			Hash:         lo.ToPtr("hash"),
 			Payload:      "{\"key\": \"value\"}",
-			PreviousHash: "previous_hash",
+			PreviousHash: lo.ToPtr("previous_hash"),
 			CreatedAt:    now,
 		})
 
 		// Get the last block
-		block, err := repo.GetActiveBlock()
+		block, err := repo.GetPendingBlock()
+		fmt.Printf("block: %v\n", block)
 
 		brs.NoError(err)
 		brs.NotNil(block)
 		brs.Equal(uint(1), block.ID)
+		brs.Equal(models.BlockStatusPending, block.Status)
 		brs.Equal("hash", *block.Hash)
 		brs.Equal("{\"key\": \"value\"}", block.Payload)
-		brs.Equal("previous_hash", block.PreviousHash)
+		brs.Equal("previous_hash", *block.PreviousHash)
 		brs.Equal(now.Unix(), block.CreatedAt.Unix())
-
 	})
 
 	// Test get last block (no block)
-	brs.Run("test get last block (no block)", func() {
+	brs.Run("test get active block (no block)", func() {
 		var db *gorm.DB
 		var repo repositories.BlockRepositoryInterface
 		app := tests.NewTestApp(false).Run(brs.T(), fx.Populate(&db, &repo))
@@ -96,7 +126,7 @@ func (brs *BlockRepositorySuite) TestCreateGenesisBlock() {
 		brs.NoError(err)
 		brs.NotNil(block)
 		brs.Greater(block.ID, uint(0))
-		brs.Equal("", block.PreviousHash)
+		brs.Equal("genesis", *block.PreviousHash)
 		brs.NotNil(block.Hash)
 		brs.Equal("{}", block.Payload)
 	})
