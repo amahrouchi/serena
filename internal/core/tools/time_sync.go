@@ -1,8 +1,7 @@
 package tools
 
 import (
-	"errors"
-	"github.com/beevik/ntp"
+	"github.com/samber/lo"
 	"time"
 )
 
@@ -13,24 +12,21 @@ type TimeSyncInterface interface {
 
 // TimeSync is a service for syncing time.
 type TimeSync struct {
-	NtpServer string
 }
 
 // NewTimeSync creates a new TimeSync service.
 func NewTimeSync() *TimeSync {
-	return &TimeSync{
-		NtpServer: "time.google.com", // TODO: use several sources
-	}
+	return &TimeSync{}
 }
 
 // Current returns the current time.
 func (ts *TimeSync) Current() (*time.Time, error) {
-	for i := 0; i < 10; i++ {
-		currTime, err := ntp.Time(ts.NtpServer)
-		if err == nil {
-			return &currTime, nil
-		}
-	}
+	/*
+	 * I wanted to work with NTP servers
+	 * but it creates to much network delay.
+	 * Maybe later we can declare a node responsible
+	 * for time sync and query it here?
+	 */
 
-	return nil, errors.New("unable to get date from NTP")
+	return lo.ToPtr(time.Now()), nil
 }

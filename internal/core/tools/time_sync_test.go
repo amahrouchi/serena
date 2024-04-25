@@ -27,17 +27,6 @@ func (s *TimeSyncTestSuite) TestCurrent() {
 	s.Assert().NotNil(currTime)
 }
 
-// TestCurrentError tests the Current method with an error.
-func (s *TimeSyncTestSuite) TestCurrentError() {
-	timeSync := tools.NewTimeSync()
-	timeSync.NtpServer = "invalid.ntp.test"
-
-	currTime, err := timeSync.Current()
-
-	s.Assert().Error(err)
-	s.Assert().Nil(currTime)
-}
-
 // TestTimeSyncTestSuite tests the TimeSyncTestSuite.
 func TestTimeSyncTestSuite(t *testing.T) {
 	suite.Run(t, new(TimeSyncTestSuite))
