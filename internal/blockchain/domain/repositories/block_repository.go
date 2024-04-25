@@ -107,10 +107,6 @@ func (br *BlockRepository) CreateGenesisBlock() (*models.Block, error) {
 	hash := sha256.New()
 	hash.Write([]byte(lo.RandomString(40, lo.LettersCharset)))
 
-	// TODO:
-	//  - put the blocks creation in a transaction
-	//  - a bit tricky with gorm, we need to use the tx object instead of the db object, see how to do it...
-
 	// Block construction
 	block := models.Block{
 		Status:       models.BlockStatusClosed,
@@ -120,24 +116,40 @@ func (br *BlockRepository) CreateGenesisBlock() (*models.Block, error) {
 		CreatedAt:    *now,
 	}
 
-	// Save block to DB
-	result := br.db.Create(&block)
-	if result.Error != nil {
-		br.logger.Error().Msg("Genesis block failed to be created")
+	// Create the first blocks into a transaction
+	tErr := br.db.Transaction(func(tx *gorm.DB) error {
+		// Save genesis block to DB
+		result := tx.Create(&block)
+		if result.Error != nil {
+			br.logger.Error().Msg("Genesis block failed to be created")
+			return result.Error
+		}
 
-		return nil, errors.New("cannot create genesis block")
-	}
+		// Ensure following blocks are created in the same transaction
+		db := br.db
+		br.db = tx
+		defer func() {
+			br.db = db
+		}()
 
-	// Create the active block
-	_, err = br.CreateEmptyBlock(block.Hash, models.BlockStatusActive)
-	if err != nil {
-		return nil, err
-	}
+		// Create the active block
+		_, err = br.CreateEmptyBlock(block.Hash, models.BlockStatusActive)
+		if err != nil {
+			return err
+		}
 
-	// Create the next block
-	_, err = br.CreateEmptyBlock(nil, models.BlockStatusPending)
-	if err != nil {
-		return nil, err
+		// Create the next block
+		_, err = br.CreateEmptyBlock(nil, models.BlockStatusPending)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	// Handle transaction error
+	if tErr != nil {
+		return nil, tErr
 	}
 
 	return &block, nil
