@@ -33,7 +33,7 @@ func (brs *BlockRepositorySuite) TestCreateEmptyBlock() {
 	brs.Equal("not implemented", err.Error())
 }
 
-// TestGetLastBlock tests the GetLastBlock method
+// TestGetLastBlock tests the GetActiveBlock method
 func (brs *BlockRepositorySuite) TestGetLastBlock() {
 	// Test get last block (no errors)
 	brs.Run("test get last block (no errors)", func() {
@@ -53,7 +53,7 @@ func (brs *BlockRepositorySuite) TestGetLastBlock() {
 		})
 
 		// Get the last block
-		block, err := repo.GetLastBlock()
+		block, err := repo.GetActiveBlock()
 
 		brs.NoError(err)
 		brs.NotNil(block)
@@ -73,7 +73,7 @@ func (brs *BlockRepositorySuite) TestGetLastBlock() {
 		defer app.RequireStop()
 
 		// Get the last block
-		block, err := repo.GetLastBlock()
+		block, err := repo.GetActiveBlock()
 
 		// Assert
 		brs.NoError(err)

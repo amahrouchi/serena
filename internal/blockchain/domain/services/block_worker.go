@@ -46,7 +46,7 @@ func (bw *BlockWorker) Start() error {
 	}
 
 	// Load the last block
-	lastBlock, err := bw.producer.GetLastBlock()
+	lastBlock, err := bw.producer.GetActiveBlock()
 	if lastBlock == nil && err == nil {
 		// Create the genesis block
 		_, err := bw.producer.CreateGenesisBlock()
@@ -91,12 +91,12 @@ func (bw *BlockWorker) Start() error {
 		// Create the block after the block duration has passed
 		diff := currTime.UnixMilli() - refTime.UnixMilli()
 		if diff >= int64(bw.config.App.BlockChain.Interval*1000) {
-			// Close the current block (hash + date)
-			// Create a new block: prev hash + empty payload
-
-			bw.logger.Info().Msg("Closing current block: generating hash...")
-			bw.logger.Info().Msg("Switching pending -> current block: adding prev hash...")
-			bw.logger.Info().Msg("Creating a new pending block...")
+			// Close the current block and create a new one
+			err = bw.producer.SwitchActiveBlock()
+			if err != nil {
+				bw.logger.Error().Err(err).Msg("Failed to switch active block")
+				continue
+			}
 
 			// Get the current block time
 			blockTime, err := bw.timeSync.Current()

@@ -25,14 +25,14 @@ func (bps *BlockProducerSuite) TestCalculateHash() {
 	bps.Equal("", hash)
 }
 
-// TestGetLastBlock tests the GetLastBlock method.
+// TestGetLastBlock tests the GetActiveBlock method.
 func (bps *BlockProducerSuite) TestGetLastBlock() {
 	repo := new(repositories.BlockRepositoryMock)
-	repo.On("GetLastBlock").Return(&models.Block{}, nil)
+	repo.On("GetActiveBlock").Return(&models.Block{}, nil)
 
 	// Get last block
 	producer := services.NewBlockProducer(repo, tests.NewEmptyLogger())
-	block, err := producer.GetLastBlock()
+	block, err := producer.GetActiveBlock()
 
 	// Assert
 	bps.NoError(err)
