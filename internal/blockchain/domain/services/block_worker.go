@@ -95,14 +95,14 @@ func (bw *BlockWorker) Start() error {
 			err = bw.producer.SwitchActiveBlock()
 			if err != nil {
 				bw.logger.Error().Err(err).Msg("Failed to switch active block")
-				continue
+				panic(err)
 			}
 
 			// Get the current block time
 			blockTime, err := bw.timeSync.Current()
 			if err != nil {
 				bw.logger.Warn().Err(err).Msg("Failed to get block time")
-				continue
+				panic(err)
 			}
 
 			// Update the reference time
