@@ -10,17 +10,42 @@ type BlockRepositoryMock struct {
 	mock.Mock
 }
 
-func (brm *BlockRepositoryMock) CreateEmptyBlock() error {
+func (brm *BlockRepositoryMock) CreateGenesisBlock() (*models.Block, error) {
+	args := brm.Called()
+	return args.Get(0).(*models.Block), args.Error(1)
+}
+
+func (brm *BlockRepositoryMock) CreateEmptyBlock(prevHash *string, status models.BlockStatus) (*models.Block, error) {
+	args := brm.Called(prevHash, status)
+	return args.Get(0).(*models.Block), args.Error(1)
+}
+
+func (brm *BlockRepositoryMock) SwitchActiveBlock() error {
 	args := brm.Called()
 	return args.Error(0)
 }
 
-func (brm *BlockRepositoryMock) GetLastBlock() (*models.Block, error) {
+func (brm *BlockRepositoryMock) GetActiveBlock() (*models.Block, error) {
 	args := brm.Called()
 	return args.Get(0).(*models.Block), args.Error(1)
 }
 
-func (brm *BlockRepositoryMock) CreateGenesisBlock() (*models.Block, error) {
+func (brm *BlockRepositoryMock) GetPendingBlock() (*models.Block, error) {
 	args := brm.Called()
 	return args.Get(0).(*models.Block), args.Error(1)
+}
+
+func (brm *BlockRepositoryMock) Update(block *models.Block) error {
+	args := brm.Called(block)
+	return args.Error(0)
+}
+
+func (brm *BlockRepositoryMock) Activate(block *models.Block) error {
+	args := brm.Called(block)
+	return args.Error(0)
+}
+
+func (brm *BlockRepositoryMock) Close(block *models.Block) error {
+	args := brm.Called(block)
+	return args.Error(0)
 }
