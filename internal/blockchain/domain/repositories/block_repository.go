@@ -185,6 +185,9 @@ func (br *BlockRepository) SwitchActiveBlock() error {
 			}
 		} else {
 			newActiveBlock, err = br.CreateEmptyBlock(activeBlock.Hash, models.BlockStatusActive)
+			if err != nil {
+				return err
+			}
 		}
 		br.logger.Debug().Interface("block", newActiveBlock).Msg("Pending block activated")
 

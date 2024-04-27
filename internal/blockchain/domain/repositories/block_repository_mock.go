@@ -16,7 +16,12 @@ func (brm *BlockRepositoryMock) CreateGenesisBlock() (*models.Block, error) {
 }
 
 func (brm *BlockRepositoryMock) CreateEmptyBlock(prevHash *string, status models.BlockStatus) (*models.Block, error) {
-	args := brm.Called(prevHash, status)
+	if prevHash == nil {
+		args := brm.Called(nil, status)
+		return args.Get(0).(*models.Block), args.Error(1)
+	}
+
+	args := brm.Called(*prevHash, status)
 	return args.Get(0).(*models.Block), args.Error(1)
 }
 

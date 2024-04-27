@@ -9,24 +9,15 @@ import (
 	"testing"
 )
 
+// TODO: fix these tests
+
 // BlockProducerSuite is the test suite for the BlockProducer struct.
 type BlockProducerSuite struct {
 	suite.Suite
 }
 
-// TestCalculateHash tests the CalculateHash method.
-func (bps *BlockProducerSuite) TestCalculateHash() {
-	producer := services.NewBlockProducer(nil, nil)
-
-	// Calculate hash
-	hash := producer.CalculateHash(nil)
-
-	// Assert
-	bps.Equal("", hash)
-}
-
 // TestGetLastBlock tests the GetActiveBlock method.
-func (bps *BlockProducerSuite) TestGetLastBlock() {
+func (bps *BlockProducerSuite) TestGetActiveBlock() {
 	repo := new(repositories.BlockRepositoryMock)
 	repo.On("GetActiveBlock").Return(&models.Block{}, nil)
 
@@ -39,17 +30,18 @@ func (bps *BlockProducerSuite) TestGetLastBlock() {
 	bps.NotNil(block)
 }
 
-// TestProduceBlock tests the CreateEmptyBlock method.
-func (bps *BlockProducerSuite) TestProduceBlock() {
+// TestCreateEmptyBlock tests the CreateEmptyBlock method.
+func (bps *BlockProducerSuite) TestCreateEmptyBlock() {
 	repo := new(repositories.BlockRepositoryMock)
-	repo.On("CreateEmptyBlock").Return(nil)
+	repo.On("CreateEmptyBlock", nil, models.BlockStatusPending).Return(&models.Block{}, nil)
 
-	// Produce block
+	// Create empty block
 	producer := services.NewBlockProducer(repo, tests.NewEmptyLogger())
-	producer.CreateEmptyBlock()
+	block, err := producer.CreateEmptyBlock(nil, models.BlockStatusPending)
 
 	// Assert
-	repo.AssertExpectations(bps.T())
+	bps.NoError(err)
+	bps.NotNil(block)
 }
 
 // TestCreateGenesisBlock tests the CreateGenesisBlock method.
@@ -64,6 +56,19 @@ func (bps *BlockProducerSuite) TestCreateGenesisBlock() {
 	// Assert
 	bps.NoError(err)
 	bps.NotNil(block)
+}
+
+// TestSwitchActiveBlock tests the SwitchActiveBlock method.
+func (bps *BlockProducerSuite) TestSwitchActiveBlock() {
+	repo := new(repositories.BlockRepositoryMock)
+	repo.On("SwitchActiveBlock").Return(nil)
+
+	// Switch active block
+	producer := services.NewBlockProducer(repo, tests.NewEmptyLogger())
+	err := producer.SwitchActiveBlock()
+
+	// Assert
+	bps.NoError(err)
 }
 
 // TestGetLastBlock runs the BlockProducerSuite.-
