@@ -26,6 +26,7 @@ type BlockRepositoryInterface interface {
 // BlockRepository is a repository for blocks
 type BlockRepository struct {
 	timeSync tools.TimeSyncInterface
+	hashGen  HashGenInterface
 	db       *gorm.DB
 	logger   *zerolog.Logger
 }
@@ -33,11 +34,13 @@ type BlockRepository struct {
 // NewBlockRepository creates a new BlockRepository
 func NewBlockRepository(
 	timeSync tools.TimeSyncInterface,
+	hashGen HashGenInterface,
 	db *gorm.DB,
 	logger *zerolog.Logger,
 ) *BlockRepository {
 	return &BlockRepository{
 		timeSync: timeSync,
+		hashGen:  hashGen,
 		db:       db,
 		logger:   logger,
 	}
@@ -161,8 +164,7 @@ func (br *BlockRepository) SwitchActiveBlock() error {
 		br.logger.Debug().Interface("block", activeBlock).Msg("Active block closed")
 
 		// Calculate hash of the active block
-		// TODO: create a service to calculate the hash
-		activeBlock.Hash = lo.ToPtr(lo.RandomString(64, lo.AlphanumericCharset))
+		activeBlock.Hash = lo.ToPtr(br.hashGen.FromBlock(activeBlock))
 		err = br.Update(activeBlock)
 		if err != nil {
 			return err
