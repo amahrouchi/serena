@@ -59,6 +59,31 @@ func (brs *BlockRepositorySuite) TestCreateEmptyBlock() {
 		brs.Equal(models.BlockStatusPending, block.Status)
 		brs.IsType(time.Time{}, block.CreatedAt)
 	})
+
+	brs.Run("test create empty block (fail to get time)", func() {
+		// Prepare deps to populate
+		var repo repositories.BlockRepositoryInterface
+
+		// Run the test app
+		app := tests.NewTestApp(false).Run(
+			brs.T(),
+			fx.Populate(&repo),
+			fx.Decorate(func() tools.TimeSyncInterface {
+				mockTimeSync := new(tools.TimeSyncMock)
+				mockTimeSync.On("Current").Return(nil, errors.New("error"))
+				return mockTimeSync
+			}),
+		)
+		defer app.RequireStop()
+
+		// Create empty block
+		block, err := repo.CreateEmptyBlock(nil, models.BlockStatusPending)
+
+		// Assert
+		brs.Nil(block)
+		brs.Error(err)
+		brs.Equal("error", err.Error())
+	})
 }
 
 // TestGetLastBlock tests the GetActiveBlock method
