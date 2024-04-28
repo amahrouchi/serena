@@ -153,7 +153,6 @@ func (brs *BlockRepositorySuite) TestCreateGenesisBlock() {
 			fx.Decorate(func() tools.TimeSyncInterface {
 				mockTimeSync := new(tools.TimeSyncMock)
 				mockTimeSync.On("Current").Return(nil, errors.New("error"))
-
 				return mockTimeSync
 			}),
 		)
@@ -166,6 +165,117 @@ func (brs *BlockRepositorySuite) TestCreateGenesisBlock() {
 		brs.Nil(block)
 		brs.Error(err)
 		brs.Equal("error", err.Error())
+	})
+}
+
+// TestSwitchActiveBlock tests the SwitchActiveBlock method
+func (brs *BlockRepositorySuite) TestSwitchActiveBlock() {
+	brs.Run("test switch active block (no errors)", func() {
+		// Run the test app
+		var repo repositories.BlockRepositoryInterface
+		var db *gorm.DB
+		app := tests.NewTestApp(false).Run(
+			brs.T(),
+			fx.Populate(&repo, &db),
+		)
+		defer app.RequireStop()
+
+		// Create test data
+		db.Create(&models.Block{
+			Status:       models.BlockStatusActive,
+			Hash:         nil,
+			PreviousHash: lo.ToPtr("active_previous_hash"),
+			Payload:      "{}",
+			CreatedAt:    time.Now(),
+		})
+		db.Create(&models.Block{
+			Status:       models.BlockStatusPending,
+			Hash:         nil,
+			PreviousHash: nil,
+			Payload:      "{}",
+			CreatedAt:    time.Now(),
+		})
+
+		// Load data from repo
+		activeBlock, _ := repo.GetActiveBlock()
+		pendingBlock, _ := repo.GetPendingBlock()
+
+		// Switch active block
+		err := repo.SwitchActiveBlock()
+
+		// Load block data from updated db
+		var closedBlock, newActiveBlock models.Block
+		db.Find(&closedBlock, activeBlock.ID)
+		db.Find(&newActiveBlock, pendingBlock.ID)
+		newPendingBlock, _ := repo.GetPendingBlock()
+
+		// Assert closed block
+		brs.NoError(err)
+		brs.Equal(models.BlockStatusClosed, closedBlock.Status)
+		brs.NotNil(closedBlock.Hash)
+		brs.NotNil(closedBlock.PreviousHash)
+
+		// Assert active block
+		brs.Equal(models.BlockStatusActive, newActiveBlock.Status)
+		brs.Equal(closedBlock.Hash, newActiveBlock.PreviousHash)
+		brs.Nil(newActiveBlock.Hash)
+		brs.Equal(newActiveBlock.Payload, "{}")
+
+		// Assert pending block
+		brs.NotEqual(pendingBlock.ID, newPendingBlock.ID)
+		brs.Equal(models.BlockStatusPending, newPendingBlock.Status)
+		brs.Equal(newPendingBlock.Payload, "{}")
+		brs.Nil(newPendingBlock.Hash)
+		brs.Nil(newPendingBlock.PreviousHash)
+	})
+
+	brs.Run("test switch active block (no pending block)", func() {
+		var repo repositories.BlockRepositoryInterface
+		var db *gorm.DB
+		app := tests.NewTestApp(false).Run(
+			brs.T(),
+			fx.Populate(&repo, &db),
+		)
+		defer app.RequireStop()
+
+		// Create test data
+		db.Create(&models.Block{
+			Status:       models.BlockStatusActive,
+			Hash:         nil,
+			PreviousHash: lo.ToPtr("active_previous_hash"),
+			Payload:      "{}",
+			CreatedAt:    time.Now(),
+		})
+
+		// Load data from repo
+		activeBlock, _ := repo.GetActiveBlock()
+
+		// Switch active block
+		err := repo.SwitchActiveBlock()
+
+		// Load block data from updated db
+		var closedBlock models.Block
+		db.Find(&closedBlock, activeBlock.ID)
+		newPendingBlock, _ := repo.GetPendingBlock()
+		newActiveBlock, _ := repo.GetActiveBlock()
+
+		// Assert closed block
+		brs.NoError(err)
+		brs.Equal(models.BlockStatusClosed, closedBlock.Status)
+		brs.NotNil(closedBlock.Hash)
+		brs.NotNil(closedBlock.PreviousHash)
+
+		// Assert active block
+		brs.Equal(models.BlockStatusActive, newActiveBlock.Status)
+		brs.Equal(closedBlock.Hash, newActiveBlock.PreviousHash)
+		brs.Nil(newActiveBlock.Hash)
+		brs.Equal(newActiveBlock.Payload, "{}")
+
+		// Assert pending block
+		brs.Equal(models.BlockStatusPending, newPendingBlock.Status)
+		brs.Equal(newPendingBlock.Payload, "{}")
+		brs.Nil(newPendingBlock.Hash)
+		brs.Nil(newPendingBlock.PreviousHash)
 	})
 }
 
