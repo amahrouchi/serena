@@ -11,12 +11,12 @@ const (
 	BlockStatusClosed  BlockStatus = "closed"
 )
 
-// Block is the block DB model
+// Block is the block DB model + json payload
 type Block struct {
-	ID           uint        `gorm:"primarykey"`
-	Status       BlockStatus `gorm:"type:varchar(30)"`
-	Payload      string      `gorm:"type:json"`
-	Hash         *string     `gorm:"unique"`
-	PreviousHash *string     `gorm:"unique"`
-	CreatedAt    time.Time
+	ID           uint        `gorm:"primarykey" json:"id"`
+	Status       BlockStatus `gorm:"type:varchar(30)" json:"status"`
+	Payload      string      `gorm:"type:json" json:"payload"`
+	Hash         *string     `gorm:"type:varchar(255);unique" json:"-"`
+	PreviousHash *string     `gorm:"type:varchar(255);unique" json:"previous_hash"`
+	CreatedAt    time.Time   `json:"created_at"`
 }
