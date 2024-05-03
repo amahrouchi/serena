@@ -4,13 +4,14 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/models"
 	"github.com/rs/zerolog"
 )
 
 // HashGenInterface is an interface for a hash generator.
 type HashGenInterface interface {
-	FromBlock(block *models.Block) string
+	FromBlock(block *models.Block) (string, error)
 }
 
 // HashGen is responsible for generating hashes.
@@ -26,8 +27,10 @@ func NewHashGen(logger *zerolog.Logger) *HashGen {
 }
 
 // FromBlock generates a hash from a block.
-func (hg *HashGen) FromBlock(block *models.Block) string {
-	// return lo.RandomString(64, lo.AlphanumericCharset)
+func (hg *HashGen) FromBlock(block *models.Block) (string, error) {
+	if block == nil {
+		return "", errors.New("cannot generate hash from nil block")
+	}
 
 	// Marshal payload
 	jsonBlock, err := json.Marshal(block)
@@ -37,7 +40,7 @@ func (hg *HashGen) FromBlock(block *models.Block) string {
 			Interface("block", block).
 			Msg("Failed to marshal block payload")
 
-		panic(err) // TODO: see how to recover/handle this
+		return "", err
 	}
 	hg.logger.Debug().Str("jsonBlock", string(jsonBlock)).Msg("JSON block before hashing")
 
@@ -45,5 +48,5 @@ func (hg *HashGen) FromBlock(block *models.Block) string {
 	hash := sha256.New()
 	hash.Write(jsonBlock)
 
-	return hex.EncodeToString(hash.Sum(nil))
+	return hex.EncodeToString(hash.Sum(nil)), nil
 }
