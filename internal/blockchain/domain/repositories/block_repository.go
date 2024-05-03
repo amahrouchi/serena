@@ -164,7 +164,11 @@ func (br *BlockRepository) SwitchActiveBlock() error {
 		br.logger.Debug().Interface("block", activeBlock).Msg("Active block closed")
 
 		// Calculate hash of the active block
-		activeBlock.Hash = lo.ToPtr(br.hashGen.FromBlock(activeBlock))
+		hash, err := br.hashGen.FromBlock(activeBlock)
+		if err != nil {
+			return err
+		}
+		activeBlock.Hash = lo.ToPtr(hash)
 		err = br.Update(activeBlock)
 		if err != nil {
 			return err

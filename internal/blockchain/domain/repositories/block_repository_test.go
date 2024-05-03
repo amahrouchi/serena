@@ -8,6 +8,7 @@ import (
 	"github.com/amahrouchi/serena/internal/core/tests"
 	"github.com/amahrouchi/serena/internal/core/tools"
 	"github.com/samber/lo"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
@@ -195,7 +196,7 @@ func (brs *BlockRepositorySuite) TestCreateGenesisBlock() {
 
 // TestSwitchActiveBlock tests the SwitchActiveBlock method
 func (brs *BlockRepositorySuite) TestSwitchActiveBlock() {
-	brs.Run("test switch active block (no errors)", func() {
+	brs.Run("test switch (no errors)", func() {
 		// Run the test app
 		var repo repositories.BlockRepositoryInterface
 		var db *gorm.DB
@@ -254,7 +255,7 @@ func (brs *BlockRepositorySuite) TestSwitchActiveBlock() {
 		brs.Nil(newPendingBlock.PreviousHash)
 	})
 
-	brs.Run("test switch active block (no pending block)", func() {
+	brs.Run("test switch (no pending block)", func() {
 		var repo repositories.BlockRepositoryInterface
 		var db *gorm.DB
 		app := tests.NewTestApp(false).Run(
@@ -301,6 +302,48 @@ func (brs *BlockRepositorySuite) TestSwitchActiveBlock() {
 		brs.Equal(newPendingBlock.Payload, "{}")
 		brs.Nil(newPendingBlock.Hash)
 		brs.Nil(newPendingBlock.PreviousHash)
+	})
+
+	brs.Run("test switch (fail to hash)", func() {
+		{
+			// Context data
+			hashErr := errors.New("hash error")
+
+			// Run the test app
+			var repo repositories.BlockRepositoryInterface
+			var db *gorm.DB
+			app := tests.NewTestApp(false).Run(
+				brs.T(),
+				fx.Populate(&repo, &db),
+				fx.Decorate(func() repositories.HashGenInterface {
+					// duplicate active block
+					hashGen := repositories.HashGenMock{}
+					hashGen.On("FromBlock", mock.AnythingOfType("*models.Block")).
+						Return("", hashErr)
+
+					return &hashGen
+				}),
+			)
+			defer app.RequireStop()
+
+			// Create test data
+			activeBlock := &models.Block{
+				Status:       models.BlockStatusActive,
+				Hash:         nil,
+				PreviousHash: lo.ToPtr("active_previous_hash"),
+				Payload:      "{}",
+				CreatedAt:    time.Now(),
+			}
+			db.Create(activeBlock)
+
+			// Switch active block
+			err := repo.SwitchActiveBlock()
+
+			// Assert
+			activeBlockAfterFailedSwitch, _ := repo.GetActiveBlock()
+			brs.ErrorIs(err, hashErr)
+			brs.Equal(activeBlock.ID, activeBlockAfterFailedSwitch.ID)
+		}
 	})
 }
 
