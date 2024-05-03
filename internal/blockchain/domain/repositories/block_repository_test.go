@@ -207,24 +207,23 @@ func (brs *BlockRepositorySuite) TestSwitchActiveBlock() {
 		defer app.RequireStop()
 
 		// Create test data
-		db.Create(&models.Block{
+		activeBlock := &models.Block{
 			Status:       models.BlockStatusActive,
 			Hash:         nil,
 			PreviousHash: lo.ToPtr("active_previous_hash"),
 			Payload:      "{}",
 			CreatedAt:    time.Now(),
-		})
-		db.Create(&models.Block{
+		}
+		db.Create(activeBlock)
+
+		pendingBlock := &models.Block{
 			Status:       models.BlockStatusPending,
 			Hash:         nil,
 			PreviousHash: nil,
 			Payload:      "{}",
 			CreatedAt:    time.Now(),
-		})
-
-		// Load data from repo
-		activeBlock, _ := repo.GetActiveBlock()
-		pendingBlock, _ := repo.GetPendingBlock()
+		}
+		db.Create(pendingBlock)
 
 		// Switch active block
 		err := repo.SwitchActiveBlock()
@@ -265,16 +264,14 @@ func (brs *BlockRepositorySuite) TestSwitchActiveBlock() {
 		defer app.RequireStop()
 
 		// Create test data
-		db.Create(&models.Block{
+		activeBlock := &models.Block{
 			Status:       models.BlockStatusActive,
 			Hash:         nil,
 			PreviousHash: lo.ToPtr("active_previous_hash"),
 			Payload:      "{}",
 			CreatedAt:    time.Now(),
-		})
-
-		// Load data from repo
-		activeBlock, _ := repo.GetActiveBlock()
+		}
+		db.Create(activeBlock)
 
 		// Switch active block
 		err := repo.SwitchActiveBlock()
