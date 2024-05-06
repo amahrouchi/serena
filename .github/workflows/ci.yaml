@@ -39,7 +39,7 @@ jobs:
         env:
           POSTGRES_USER: srn_user
           POSTGRES_PASSWORD: testtest
-          POSTGRES_DB: postgres
+          POSTGRES_DB: serena_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -62,4 +62,4 @@ jobs:
           SRN_DB_PASSWORD: testtest
           SRN_DB_HOST: postgres
           SRN_DB_PORT: 5432
-          SRN_DB_NAME: postgres
+          SRN_DB_NAME: serena_test
