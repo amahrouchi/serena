@@ -1,4 +1,4 @@
-name: CI workflow
+name: CI
 
 on:
   pull_request:
@@ -6,13 +6,12 @@ on:
       - opened
       - synchronize
       - reopened
-#      - edited
-#      - unlocked
 
 jobs:
 
   build:
     runs-on: ubuntu-latest
+    name: Build & Lint
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,12 +26,16 @@ jobs:
         with:
           version: latest
 
+      - name: Go Vet
+        run: go vet ./...
+
       - name: Build
         run: go build -v ./...
 
   test:
     runs-on: ubuntu-latest
     container: golang:1.22
+    name: Unit & Integration Tests
     services:
       postgres:
         image: postgres:16
@@ -51,7 +54,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Test
+      - name: Run tests
         run: go test -v -cover ./...
         env:
           SRN_ENV: test
