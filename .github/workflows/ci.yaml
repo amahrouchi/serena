@@ -48,6 +48,9 @@ jobs:
         ports:
           - 5432:5432
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Test
         run: go test -v -cover ./...
         env:
