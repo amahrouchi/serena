@@ -57,7 +57,7 @@ jobs:
           SRN_ENV: test
           SRN_PORT: 8080
           SRN_BLOCKCHAIN_WORKER_ENABLED: false
-          SRN_BLOCKCHAIN_INTERVAL: 0
+          SRN_BLOCKCHAIN_INTERVAL: 5
           SRN_DB_USER: srn_user
           SRN_DB_PASSWORD: testtest
           SRN_DB_HOST: postgres
