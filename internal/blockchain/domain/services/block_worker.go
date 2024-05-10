@@ -58,29 +58,6 @@ func (bw *BlockWorker) Start() error {
 	}
 
 	for {
-		// wait between blocks..
-		// TODO:
-		//   - sync with an external time provider
-		//   - store the creation time inside the block
-		//   - use the creation time of prev block to calculate the wait time
-		//   - create blocks using a block producer service
-		//   - use a channel provided through FX to pass payload from API to block producer
-
-		// TODO:
-		//   - producer empty block to the chain
-		//   - generate an empty previous hash for the first block
-		//   - persist the block
-		//     - into dummy json file
-		//     - into a real DB (a Mongo seems adequate)
-		//   - add a channel property to the producer
-		//   - provide values in the channel using an API endpoint to save data into the chain
-		//   - implement an auth system to write to the chain
-		//   - implement a read API to display the chain
-		//     - last N blocks
-		//     - first N blocks
-		//     - from block H1 to H2, from H1, to H2
-		//     - care because displaying to much could become costly
-
 		// Get the current time
 		currTime, err := bw.timeSync.Current()
 		if err != nil {
