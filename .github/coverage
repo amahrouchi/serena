@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Prepare coverage context
+threshold=${SRN_MIN_COVERAGE:-80}
+success=true
+count=0
+
+# Check coverage
+while read i;
+do
+    # Parse coverage data
+    fileName=$(echo $i | awk '{print $1}')
+    functionName=$(echo $i | awk '{print $2}')
+    coverageStr=$(echo $i | awk '{print $3}')
+    coverage=${coverageStr%.*}
+
+    # Check if coverage is below threshold and add some exceptions to the rule
+    if [[ ! $fileName =~ _mock\.go ]] \
+       && [[ ! $fileName =~ main\.go ]] \
+       && [[ ! $fileName =~ internal/core/tests ]] \
+       && [[ $fileName != total:  ]] \
+       && [[ $coverage -lt $threshold ]];
+    then
+        echo "--- ERROR"
+        echo "FILE: $fileName"
+        echo "FUNCTION: $functionName"
+        echo -e "COVERAGE: $coverage% \n"
+
+        count=$((count+1))
+    fi
+done <<< "$(go tool cover -func=build/coverage.out)"
+
+# Error report
+if [[ $count -gt 0 ]];
+then
+    echo "--- ERROR: Some functions have a coverage below the $threshold% threshold"
+    echo "TOTAL: $count errors"
+    exit 1
+fi
+
+# Success report
+echo "SUCCESS: The coverage is above the $threshold% threshold for all functions"
