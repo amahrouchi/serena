@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# This script checks if the coverage of the project is above a certain threshold
+# The threshold is defined by the SRN_MIN_COVERAGE environment variable (default: 80)
+# The script will fail if the coverage is below the threshold for any function in the project
+# The script will ignore the coverage of the mock files, the main.go file and and the test package
+
 # Prepare coverage context
 threshold=${SRN_MIN_COVERAGE:-80}
 count=0
