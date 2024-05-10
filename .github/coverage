@@ -20,7 +20,7 @@ do
 
     # Check if coverage is below threshold and add some exceptions to the rule
     if [[ ! $fileName =~ _mock\.go ]] \
-       && [[ ! $fileName =~ main\.go ]] \
+       && [[ ! $fileName =~ /main\.go ]] \
        && [[ ! $fileName =~ internal/core/tests ]] \
        && [[ $fileName != total:  ]] \
        && [[ $coverage -lt $threshold ]];
