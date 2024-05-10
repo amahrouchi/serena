@@ -344,6 +344,66 @@ func (brs *BlockRepositorySuite) TestSwitchActiveBlock() {
 	})
 }
 
+func (brs *BlockRepositorySuite) TestUpdate() {
+
+	brs.Run("test update (no errors)", func() {
+		// Run the test app
+		var repo repositories.BlockRepositoryInterface
+		var db *gorm.DB
+		app := tests.NewTestApp(false).Run(
+			brs.T(),
+			fx.Populate(&repo, &db),
+		)
+		defer app.RequireStop()
+
+		// Create test data
+		block := &models.Block{
+			ID:           1,
+			Status:       models.BlockStatusActive,
+			Hash:         nil,
+			PreviousHash: lo.ToPtr("active_previous_hash"),
+			Payload:      "{}",
+			CreatedAt:    time.Now(),
+		}
+
+		// Update the block
+		block.Status = models.BlockStatusClosed
+		err := repo.Update(block)
+		brs.NoError(err)
+	})
+
+	brs.Run("test update (duplicate key error)", func() {
+		// Run the test app
+		var repo repositories.BlockRepositoryInterface
+		var db *gorm.DB
+		app := tests.NewTestApp(false).Run(
+			brs.T(),
+			fx.Populate(&repo, &db),
+		)
+		defer app.RequireStop()
+
+		// Create test data
+		block := &models.Block{
+			ID:           1,
+			Status:       models.BlockStatusActive,
+			Hash:         nil,
+			PreviousHash: lo.ToPtr("active_previous_hash"),
+			Payload:      "{}",
+			CreatedAt:    time.Now(),
+		}
+
+		// Update the block
+		block.Status = models.BlockStatusClosed
+		err := repo.Update(block)
+		brs.NoError(err)
+
+		// Change the block ID to trigger a duplicate key error
+		block.ID = 2
+		err2 := repo.Update(block)
+		brs.Error(err2)
+	})
+}
+
 // TestBlockRepositorySuite launches the test suite
 func TestBlockRepositorySuite(t *testing.T) {
 	suite.Run(t, new(BlockRepositorySuite))
