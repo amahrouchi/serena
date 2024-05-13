@@ -2,7 +2,6 @@ package repositories_test
 
 import (
 	"errors"
-	"fmt"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/models"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/repositories"
 	"github.com/amahrouchi/serena/internal/core/tests"
@@ -109,7 +108,6 @@ func (brs *BlockRepositorySuite) TestGetActiveBlock() {
 
 		// Get the last block
 		block, err := repo.GetPendingBlock()
-		fmt.Printf("block: %v\n", block)
 
 		brs.NoError(err)
 		brs.NotNil(block)
