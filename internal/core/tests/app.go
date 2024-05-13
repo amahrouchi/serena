@@ -33,8 +33,9 @@ func (ta *TestApp) Run(t *testing.T, opts ...fx.Option) *fxtest.App {
 		fx.Options(opts...),
 		fx.Invoke(func(migrator *database.Migrator, logger *zerolog.Logger) {
 			// Reset the test database (Postgres specific)
-			logger.Info().Msg("Resetting the test database")
+			logger.Info().Msg("Resetting the test database...")
 			migrator.ResetDatabase()
+			logger.Info().Msg("Test database successfully reset")
 		}),
 	).RequireStart()
 }
