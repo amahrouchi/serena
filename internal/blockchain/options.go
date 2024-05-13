@@ -15,13 +15,12 @@ var Options = fx.Options(
 		fx.Annotate(repositories.NewHashGen, fx.As(new(repositories.HashGenInterface))),
 	),
 	fx.Invoke(func(worker services.BlockWorkerInterface, config *configuration.Config) {
+		// Start the worker
 		if config.App.BlockChain.WorkerEnabled {
-			go func() {
-				err := worker.Start()
-				if err != nil {
-					panic(err)
-				}
-			}()
+			err := worker.Start()
+			if err != nil {
+				panic(err)
+			}
 		}
 	}),
 )
