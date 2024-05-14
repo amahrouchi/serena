@@ -55,7 +55,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run tests
-        run: mkdir build && go test -v -cover ./... -coverprofile=build/coverage.out
+        # Test are run sequentially `-p 1` which is not ideal
+        # but necessary for the integration tests to work.
+        # We should maybe separate the unit and integration tests.
+        run: mkdir build && go test ./... -v -coverprofile=build/coverage.out -p 1
         env:
           SRN_ENV: test
           SRN_PORT: 8080
