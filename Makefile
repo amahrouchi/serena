@@ -23,7 +23,7 @@ db-cli:
 
 .PHONY: test
 test:
-	docker compose exec -e SRN_ENV=test app go test -v -cover ./... -coverprofile=build/coverage.out
+	docker compose exec -e SRN_ENV=test app go test ./... -v -coverprofile=build/coverage.out -p 1
 
 .PHONY: test-coverage
 test-coverage:
