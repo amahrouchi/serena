@@ -3,12 +3,18 @@ package blockchain
 import (
 	"github.com/amahrouchi/serena/internal/blockchain/domain/repositories"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/services"
+	"github.com/amahrouchi/serena/internal/blockchain/infrastructure/handlers"
 	"github.com/amahrouchi/serena/internal/core/configuration"
+	"github.com/amahrouchi/serena/internal/core/http"
 	"go.uber.org/fx"
 )
 
 var Options = fx.Options(
 	fx.Provide(
+		// handlers
+		http.AsHandler(handlers.NewWriteHandler),
+
+		// services
 		fx.Annotate(services.NewBlockWorker, fx.As(new(services.BlockWorkerInterface))),
 		fx.Annotate(services.NewBlockProducer, fx.As(new(services.BlockProducerInterface))),
 		fx.Annotate(repositories.NewBlockRepository, fx.As(new(repositories.BlockRepositoryInterface))),
