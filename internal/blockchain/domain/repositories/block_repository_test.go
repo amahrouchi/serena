@@ -36,7 +36,7 @@ func (brs *BlockRepositorySuite) TestCreateEmptyBlock() {
 		brs.Greater(block.ID, uint(0))
 		brs.Equal("previous_hash", *block.PreviousHash)
 		brs.Nil(block.Hash)
-		brs.Equal("{}", block.Payload)
+		brs.Equal("[]", block.Payload)
 		brs.Equal(models.BlockStatusPending, block.Status)
 		brs.IsType(time.Time{}, block.CreatedAt)
 	})
@@ -55,7 +55,7 @@ func (brs *BlockRepositorySuite) TestCreateEmptyBlock() {
 		brs.Greater(block.ID, uint(0))
 		brs.Nil(block.PreviousHash)
 		brs.Nil(block.Hash)
-		brs.Equal("{}", block.Payload)
+		brs.Equal("[]", block.Payload)
 		brs.Equal(models.BlockStatusPending, block.Status)
 		brs.IsType(time.Time{}, block.CreatedAt)
 	})
@@ -154,7 +154,7 @@ func (brs *BlockRepositorySuite) TestCreateGenesisBlock() {
 		brs.Equal(models.BlockStatusClosed, block.Status)
 		brs.Equal("genesis", *block.PreviousHash)
 		brs.NotNil(block.Hash)
-		brs.Equal("{}", block.Payload)
+		brs.Equal("[]", block.Payload)
 
 		// Test the creation of the active and pending blocks
 		var blocks []models.Block
@@ -209,7 +209,7 @@ func (brs *BlockRepositorySuite) TestSwitchActiveBlock() {
 			Status:       models.BlockStatusActive,
 			Hash:         nil,
 			PreviousHash: lo.ToPtr("active_previous_hash"),
-			Payload:      "{}",
+			Payload:      "[]",
 			CreatedAt:    time.Now(),
 		}
 		db.Create(activeBlock)
@@ -218,7 +218,7 @@ func (brs *BlockRepositorySuite) TestSwitchActiveBlock() {
 			Status:       models.BlockStatusPending,
 			Hash:         nil,
 			PreviousHash: nil,
-			Payload:      "{}",
+			Payload:      "[]",
 			CreatedAt:    time.Now(),
 		}
 		db.Create(pendingBlock)
@@ -242,12 +242,12 @@ func (brs *BlockRepositorySuite) TestSwitchActiveBlock() {
 		brs.Equal(models.BlockStatusActive, newActiveBlock.Status)
 		brs.Equal(closedBlock.Hash, newActiveBlock.PreviousHash)
 		brs.Nil(newActiveBlock.Hash)
-		brs.Equal(newActiveBlock.Payload, "{}")
+		brs.Equal(newActiveBlock.Payload, "[]")
 
 		// Assert pending block
 		brs.NotEqual(pendingBlock.ID, newPendingBlock.ID)
 		brs.Equal(models.BlockStatusPending, newPendingBlock.Status)
-		brs.Equal(newPendingBlock.Payload, "{}")
+		brs.Equal(newPendingBlock.Payload, "[]")
 		brs.Nil(newPendingBlock.Hash)
 		brs.Nil(newPendingBlock.PreviousHash)
 	})
@@ -266,7 +266,7 @@ func (brs *BlockRepositorySuite) TestSwitchActiveBlock() {
 			Status:       models.BlockStatusActive,
 			Hash:         nil,
 			PreviousHash: lo.ToPtr("active_previous_hash"),
-			Payload:      "{}",
+			Payload:      "[]",
 			CreatedAt:    time.Now(),
 		}
 		db.Create(activeBlock)
@@ -290,11 +290,11 @@ func (brs *BlockRepositorySuite) TestSwitchActiveBlock() {
 		brs.Equal(models.BlockStatusActive, newActiveBlock.Status)
 		brs.Equal(closedBlock.Hash, newActiveBlock.PreviousHash)
 		brs.Nil(newActiveBlock.Hash)
-		brs.Equal(newActiveBlock.Payload, "{}")
+		brs.Equal(newActiveBlock.Payload, "[]")
 
 		// Assert pending block
 		brs.Equal(models.BlockStatusPending, newPendingBlock.Status)
-		brs.Equal(newPendingBlock.Payload, "{}")
+		brs.Equal(newPendingBlock.Payload, "[]")
 		brs.Nil(newPendingBlock.Hash)
 		brs.Nil(newPendingBlock.PreviousHash)
 	})
@@ -326,7 +326,7 @@ func (brs *BlockRepositorySuite) TestSwitchActiveBlock() {
 				Status:       models.BlockStatusActive,
 				Hash:         nil,
 				PreviousHash: lo.ToPtr("active_previous_hash"),
-				Payload:      "{}",
+				Payload:      "[]",
 				CreatedAt:    time.Now(),
 			}
 			db.Create(activeBlock)
@@ -360,7 +360,7 @@ func (brs *BlockRepositorySuite) TestUpdate() {
 			Status:       models.BlockStatusActive,
 			Hash:         nil,
 			PreviousHash: lo.ToPtr("active_previous_hash"),
-			Payload:      "{}",
+			Payload:      "[]",
 			CreatedAt:    time.Now(),
 		}
 
@@ -386,7 +386,7 @@ func (brs *BlockRepositorySuite) TestUpdate() {
 			Status:       models.BlockStatusActive,
 			Hash:         nil,
 			PreviousHash: lo.ToPtr("active_previous_hash"),
-			Payload:      "{}",
+			Payload:      "[]",
 			CreatedAt:    time.Now(),
 		}
 
