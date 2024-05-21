@@ -3,6 +3,7 @@ package repositories
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/models"
 	"github.com/amahrouchi/serena/internal/core/tools"
@@ -19,6 +20,7 @@ type BlockRepositoryInterface interface {
 	GetActiveBlock() (*models.Block, error)
 	GetPendingBlock() (*models.Block, error)
 	Update(block *models.Block) error
+	AppendDataToActiveBlock(author string, data map[string]any) error
 	Activate(block *models.Block) error
 	Close(block *models.Block) error
 }
@@ -255,6 +257,49 @@ func (br *BlockRepository) Update(block *models.Block) error {
 	}
 
 	return nil
+}
+
+// AppendDataToActiveBlock appends data to the active block
+func (br *BlockRepository) AppendDataToActiveBlock(author string, data map[string]any) error {
+	// Load the active block
+	activeBlock, err := br.GetActiveBlock()
+	if err != nil {
+		return err
+	}
+
+	// If no active block, return an error
+	if activeBlock == nil {
+		return errors.New("no active block found to append data to")
+	}
+
+	// Append data to the active block
+	var payload []models.BlockPayloadItem
+	err = json.Unmarshal([]byte(activeBlock.Payload), &payload)
+	if err != nil {
+		return err
+	}
+
+	// Getting current time
+	createdAt, err := br.timeSync.Current()
+	if err != nil {
+		return err
+	}
+
+	// Append data to the payload
+	payload = append(payload, models.BlockPayloadItem{
+		Author:    author,
+		Data:      data,
+		CreatedAt: *createdAt,
+	})
+
+	// Update the active block
+	payloadToSave, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+	activeBlock.Payload = string(payloadToSave)
+
+	return br.Update(activeBlock)
 }
 
 // Activate activates a block

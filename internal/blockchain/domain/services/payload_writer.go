@@ -1,6 +1,9 @@
 package services
 
-import "github.com/rs/zerolog"
+import (
+	"github.com/amahrouchi/serena/internal/blockchain/domain/repositories"
+	"github.com/rs/zerolog"
+)
 
 // PayloadWriterInterface defines the interface for the payload writer service.
 type PayloadWriterInterface interface {
@@ -9,13 +12,15 @@ type PayloadWriterInterface interface {
 
 // PayloadWriter provides a service to write data to the blockchain.
 type PayloadWriter struct {
-	logger *zerolog.Logger
+	blockRepo repositories.BlockRepositoryInterface
+	logger    *zerolog.Logger
 }
 
 // NewPayloadWriter creates a new instance of PayloadWriter.
-func NewPayloadWriter(logger *zerolog.Logger) *PayloadWriter {
+func NewPayloadWriter(logger *zerolog.Logger, blockRepo repositories.BlockRepositoryInterface) *PayloadWriter {
 	return &PayloadWriter{
-		logger: logger,
+		blockRepo: blockRepo,
+		logger:    logger,
 	}
 }
 
@@ -26,7 +31,10 @@ func (w *PayloadWriter) Write(author string, data map[string]any) error {
 		Interface("data", data).
 		Msgf("Writing data to the blockchain")
 
-	// TODO: Implement the write logic here
+	err := w.blockRepo.AppendDataToActiveBlock(author, data)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -45,6 +45,11 @@ func (brm *BlockRepositoryMock) Update(block *models.Block) error {
 	return args.Error(0)
 }
 
+func (brm *BlockRepositoryMock) AppendDataToActiveBlock(author string, data map[string]interface{}) error {
+	args := brm.Called(author, data)
+	return args.Error(0)
+}
+
 func (brm *BlockRepositoryMock) Activate(block *models.Block) error {
 	args := brm.Called(block)
 	return args.Error(0)
