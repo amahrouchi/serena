@@ -32,3 +32,7 @@ test-coverage:
 .PHONY: test-coverage-func
 test-coverage-func:
 	docker-compose exec app go tool cover -func build/coverage.out
+
+.PHONY: ps
+ps:
+	docker-compose ps
