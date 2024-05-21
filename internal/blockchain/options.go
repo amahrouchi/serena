@@ -17,6 +17,7 @@ var Options = fx.Options(
 		// services
 		fx.Annotate(services.NewBlockWorker, fx.As(new(services.BlockWorkerInterface))),
 		fx.Annotate(services.NewBlockProducer, fx.As(new(services.BlockProducerInterface))),
+		fx.Annotate(services.NewPayloadWriter, fx.As(new(services.PayloadWriterInterface))),
 		fx.Annotate(repositories.NewBlockRepository, fx.As(new(repositories.BlockRepositoryInterface))),
 		fx.Annotate(repositories.NewHashGen, fx.As(new(repositories.HashGenInterface))),
 	),
