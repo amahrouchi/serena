@@ -63,7 +63,7 @@ func (br *BlockRepository) CreateGenesisBlock() (*models.Block, error) {
 	block := models.Block{
 		Status:       models.BlockStatusClosed,
 		PreviousHash: lo.ToPtr("genesis"),
-		Payload:      "{}",
+		Payload:      "[]",
 		Hash:         lo.ToPtr(hex.EncodeToString(hash.Sum(nil))),
 		CreatedAt:    *now,
 	}
@@ -120,7 +120,7 @@ func (br *BlockRepository) CreateEmptyBlock(prevHash *string, status models.Bloc
 	block := models.Block{
 		Status:       status,
 		PreviousHash: prevHash,
-		Payload:      "{}",
+		Payload:      "[]",
 		CreatedAt:    *now,
 	}
 	result := br.db.Create(&block)
