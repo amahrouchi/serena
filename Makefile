@@ -26,11 +26,11 @@ test-app:
 	docker compose exec -e SRN_ENV=test app go test ./... -v -coverprofile=build/coverage.out -p 1
 
 .PHONY: see-coverage
-test-coverage:
+see-coverage:
 	go tool cover -html=build/coverage.out
 
 .PHONY: see-coverage-func
-test-coverage-func:
+see-coverage-func:
 	docker-compose exec app go tool cover -func build/coverage.out
 
 .PHONY: coverage-report
