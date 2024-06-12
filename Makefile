@@ -1,3 +1,9 @@
+# Generic
+.PHONY: build
+build:
+	go build -gcflags='all=-N -l' -o ./build/app .
+
+# Dev only
 .PHONY: up
 up:
 	docker-compose up -d
