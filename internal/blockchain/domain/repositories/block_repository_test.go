@@ -1,6 +1,7 @@
 package repositories_test
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/models"
 	"github.com/amahrouchi/serena/internal/blockchain/domain/repositories"
@@ -399,6 +400,110 @@ func (brs *BlockRepositorySuite) TestUpdate() {
 		block.ID = 2
 		err2 := repo.Update(block)
 		brs.Error(err2)
+	})
+}
+
+func (brs *BlockRepositorySuite) TestAppendDataToActiveBlock() {
+	brs.Run("test append data to active block (no errors)", func() {
+		// Run the test app
+		var repo repositories.BlockRepositoryInterface
+		var db *gorm.DB
+		app := tests.NewTestApp(false).Run(
+			brs.T(),
+			fx.Populate(&repo, &db),
+		)
+		defer app.RequireStop()
+
+		// Create test data
+		creationTime := time.Now()
+		block := &models.Block{
+			ID:           1,
+			Status:       models.BlockStatusActive,
+			Hash:         nil,
+			PreviousHash: lo.ToPtr("active_previous_hash"),
+			Payload:      "[]",
+			CreatedAt:    creationTime,
+		}
+		db.Create(block)
+
+		// Append data to the active block
+		err := repo.AppendDataToActiveBlock("author", map[string]interface{}{
+			"key": "value",
+		})
+		brs.NoError(err)
+
+		// Load block data from updated db
+		var updatedBlock models.Block
+		db.Find(&updatedBlock, block.ID)
+
+		updatedPayload := make([]models.BlockPayloadItem, 0)
+		_ = json.Unmarshal([]byte(updatedBlock.Payload), &updatedPayload)
+
+		// Assert
+		brs.Equal(models.BlockStatusActive, updatedBlock.Status)
+		brs.Equal("active_previous_hash", *updatedBlock.PreviousHash)
+		brs.Nil(updatedBlock.Hash)
+		brs.Equal("author", updatedPayload[0].Author)
+		brs.Equal("value", updatedPayload[0].Data["key"])
+		brs.Equal(creationTime.Unix(), updatedPayload[0].CreatedAt.Unix())
+	})
+
+	brs.Run("test append data to active block (no active block)", func() {
+		// Run the test app
+		var repo repositories.BlockRepositoryInterface
+		var db *gorm.DB
+		app := tests.NewTestApp(false).Run(
+			brs.T(),
+			fx.Populate(&repo, &db),
+		)
+		defer app.RequireStop()
+
+		// Append data to the active block
+		err := repo.AppendDataToActiveBlock("author", map[string]interface{}{
+			"key": "value",
+		})
+
+		// Assert error message
+		brs.Error(err)
+		brs.Equal("no active block found to append data to", err.Error())
+	})
+
+	brs.Run("test append data to active block (fail to get time)", func() {
+		// Prepare deps to populate
+		var repo repositories.BlockRepositoryInterface
+		var db *gorm.DB
+
+		// Run the test app
+		app := tests.NewTestApp(false).Run(
+			brs.T(),
+			fx.Populate(&repo, &db),
+			fx.Decorate(func() tools.TimeSyncInterface {
+				mockTimeSync := new(tools.TimeSyncMock)
+				mockTimeSync.On("Current").Return(nil, errors.New("error"))
+				return mockTimeSync
+			}),
+		)
+		defer app.RequireStop()
+
+		// Create test data
+		block := &models.Block{
+			ID:           1,
+			Status:       models.BlockStatusActive,
+			Hash:         nil,
+			PreviousHash: lo.ToPtr("active_previous_hash"),
+			Payload:      "[]",
+			CreatedAt:    time.Now(),
+		}
+		db.Create(block)
+
+		// Append data to the active block
+		err := repo.AppendDataToActiveBlock("author", map[string]interface{}{
+			"key": "value",
+		})
+
+		// Assert
+		brs.Error(err)
+		brs.Equal("error", err.Error())
 	})
 }
 
