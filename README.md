@@ -17,7 +17,7 @@ filled with the default values for a local environment.
 
 ### Run the app
 Build and start the app with the following command:
-```
+```bash
 make up
 ```
 
@@ -47,7 +47,22 @@ Content-Type: application/json
 
 ### Storage
 The blocks are stored in a PostgreSQL database running in a Docker container.
+```
+postgresql://srn_user:testtest@localhost:5432/serena
+```
 
+## Tests
+
+### Database
+Some functional and integration tests need a specific database to be created. So, before running the tests, please connect to the Postgres server and run the following SQL queries:
+```sql
+DROP DATABASE IF EXISTS serena_test;
+CREATE DATABASE serena_test OWNER srn_user;
 ```
-postgresql://srn_user:testtest@localhost:5432/postgres
+
+### Run the tests
+The whole suite can be run with the following command:
+```bash
+make test
 ```
+This command will run the test and then display a coverage report telling you which functions in the project are not covered properly (80% min).
